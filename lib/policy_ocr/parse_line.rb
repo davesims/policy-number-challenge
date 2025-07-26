@@ -13,19 +13,17 @@ class PolicyOcr::ParseLine
   # Returns an array of 9 strings that each represent the flattened 3x3 digit representations
   # extracted from the 27x3 line that was given in context.line
   def digits
-    PolicyOcr::DIGITS_PER_LINE.times.map {|index| digit(index) }
+    digital_number_strings.map do |digital_number_string|
+      PolicyOcr::DigitalInt.from_string(digital_number_string)
+    end
   end
 
-  # Collect the flattened 3x3 digit representation for the given index
-  def digit(index) 
-    digital_number_string = PolicyOcr::DIGIT_HEIGHT.times.map { |row| slices[row][index] }.join
-    PolicyOcr::DigitalInt.from_string(digital_number_string)
-  end
-
-  def slices 
+  def digital_number_strings
     line
       .map(&:chars)
       .map {|l| l.each_slice(PolicyOcr::DIGIT_WIDTH).to_a }
+      .transpose
+      .map(&:join)
   end
 
   def line = @line ||= context.line
