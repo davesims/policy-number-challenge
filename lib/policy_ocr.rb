@@ -4,7 +4,7 @@ require 'pry'
 class PolicyOcr
   DIGITS_PER_LINE = 9.freeze
   DIGIT_WIDTH = 3.freeze
-  DIGIT_HEIGHT = 4.freeze
+  LINE_HEIGHT = 4.freeze
 
   include Interactor
 

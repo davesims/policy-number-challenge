@@ -12,11 +12,10 @@ class PolicyOcr::ReadLines
   
   private
 
-  # From the raw text, extract an array of lines.
   def lines 
     raw_text
       .split(CARRIAGE_RETURN)
-      .each_slice(PolicyOcr::DIGIT_HEIGHT)
+      .each_slice(PolicyOcr::LINE_HEIGHT)
       .to_a
   end
 
