@@ -2,13 +2,18 @@
 module PolicyOcr
   module DigitalInt
 
-    # This is far too clever and magical and I would probably not approve in a production PR, BUT: 
-    #   - It's an example of one way to approach the problem of making the digital char config readable
+    # This is far too clever and magical and I would probably not approve in a production PR, BUT some advantages might be:
+    #   - The YAML file is more readable than lots of class definitions
     #   - It would allow easy addition of new digital chars, and correction or modifications of existing ones
     #   - It lays the groundwork to support an entirely different set of digital chars if needed
-    #   - It cuts down on a some boilerplate class defintion code
-    #   - YES, This is still too much ruby magic, and would not be the right initial approach
+    #   - YES, This is still too much ruby magic, and would definitely not be the right initial approach
     #   - YES, it was kind of fun to do
+    #
+    # Alternative approaches:
+    #   - Define each class manually, either in separate classes under lib/policy_ocr/digital_int/, or with 
+    #     all class definitions in this file.
+    #   - A simple array of hashes, with digit names, int values and patterns, and then a single class that
+    #     takes the digit name and returns the pattern and value.
     #
     # This will generate classes with the general pattern:
     #
