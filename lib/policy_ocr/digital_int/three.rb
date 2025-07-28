@@ -1,10 +1,10 @@
 class PolicyOcr::DigitalInt::Three < PolicyOcr::DigitalInt
-  def self.pattern
-    " _ " +
-    " _|" +
-    " _|" +
-    "   "
-  end
+  PATTERN = " _ " +
+            " _|" +
+            " _|" +
+            "   "
 
-  def to_i = 3
+  def initialize
+    @int_value = 3
+  end
 end

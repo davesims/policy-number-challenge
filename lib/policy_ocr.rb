@@ -1,28 +1,31 @@
+# frozen_string_literal: true
+
 require 'interactor'
 require 'pry'
 
-class PolicyOcr
+# Use the PolicyOcr parent namespace to encapsulate shared constants, avoid "magic strings"
+# and generally act as a config would.
+module PolicyOcr
   DIGITS_PER_LINE = 9.freeze
   DIGIT_WIDTH = 3.freeze
   LINE_HEIGHT = 4.freeze
-
-  include Interactor
-
-  def call
-    raw_text = File.read(context.file_path)
-    result = PolicyOcr::ReadLines.call(raw_text:)
-    result.all_digits.each do |line|
-      puts line.map(&:to_i).join(", ")
-    end
-  rescue StandardError => e
-    context.fail!(error: e.message)
-  end
+  CARRIAGE_RETURN = "\n".freeze
 end
+
+# Load root level files first
+require_relative 'validate_policy_number'
 
 # Load base classes first
 require_relative 'policy_ocr/digital_int'
-require_relative 'policy_ocr/parse_line'
-require_relative 'policy_ocr/read_lines'
+
+# Load policy namespace files
+require_relative 'policy_ocr/policy/number'
+require_relative 'policy_ocr/policy/document'
+
+# Load parse namespace files
+require_relative 'policy_ocr/parse/policy_document'
+require_relative 'policy_ocr/parse/policy_document_line'
+require_relative 'policy_ocr/parse/policy_number'
 
 # Load digit classes after base class
 require_relative 'policy_ocr/digital_int/zero'
@@ -35,9 +38,11 @@ require_relative 'policy_ocr/digital_int/six'
 require_relative 'policy_ocr/digital_int/seven'
 require_relative 'policy_ocr/digital_int/eight'
 require_relative 'policy_ocr/digital_int/nine'
+require_relative 'policy_ocr/digital_int/invalid'
 
 
-result = PolicyOcr.call(file_path: './spec/fixtures/sample.txt')
+
+result = PolicyOcr::Parse::PolicyDocument.call(file_path: './spec/fixtures/sample.txt')
 if result.success?
   puts "Successfully read the file."
   puts "Numbers: #{result.inpect}"

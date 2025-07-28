@@ -1,10 +1,10 @@
 class PolicyOcr::DigitalInt::Nine < PolicyOcr::DigitalInt
-  def self.pattern
-    " _ " +
-    "|_|" +
-    " _|" +
-    "   "
-  end
+  PATTERN = " _ " +
+            "|_|" +
+            " _|" +
+            "   "
 
-  def to_i = 9
+  def initialize
+    @int_value = 9
+  end
 end

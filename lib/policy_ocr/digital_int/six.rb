@@ -1,10 +1,10 @@
-class PolicyOcr::DigitalInt::Six < PolicyOcr::DigitalInt
-  def self.pattern
-    " _ " +
-    "|_ " +
-    "|_|" +
-    "   "
-  end
+class PolicyOcr::DigitalInt::Six < PolicyOcr::DigitalInt  
+  PATTERN = " _ " +
+            "|_ " +
+            "|_|" +
+            "   "
 
-  def to_i = 6
+  def initialize
+    @int_value = 6
+  end
 end

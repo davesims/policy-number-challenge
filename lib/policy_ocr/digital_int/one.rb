@@ -1,10 +1,10 @@
 class PolicyOcr::DigitalInt::One < PolicyOcr::DigitalInt
-  def self.pattern
-    "   " +
-    "  |" +
-    "  |" +
-    "   "
-  end
+  PATTERN = "   " +
+            "  |" +
+            "  |" +
+            "   "
 
-  def to_i = 1
+  def initialize
+    @int_value = 1
+  end
 end

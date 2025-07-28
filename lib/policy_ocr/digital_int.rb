@@ -1,27 +1,35 @@
 class PolicyOcr::DigitalInt
+  attr_reader :int_value
+  alias_method :to_i, :int_value
+
   def self.all_numbers
     [Zero, One, Two, Three, Four, Five, Six, Seven, Eight, Nine]
   end
 
-  def self.from_string(digital_pattern)
-    klass = all_numbers.find { |number_klass| number_klass.pattern == digital_pattern }
-    klass&.new
+  def self.from_pattern(pattern)
+    klass = all_numbers.find { |k| k::PATTERN == pattern }
+
+    if klass.nil?
+      PolicyOcr::DigitalInt::Invalid.new(pattern:)
+    end
+
+    klass.new
   end
 
-  def self.pattern
-    raise NotImplementedError, "This method should be implemented in subclasses"
+  def pattern
+    self.class::PATTERN
   end
 
-  def to_i
-    raise NotImplementedError, "This method should be implemented in subclasses"
-  end
-
-  def self.print_pattern
-    puts pattern.chars.each_slice(3).map { |slice| slice.join }.join("\n")
+  def to_s
+    int_value.to_s
   end
 
   def print_pattern
-    self.class.print_pattern
+    puts pattern
+          .chars
+          .each_slice(3)
+          .map(&:join)
+          .join("\n")
   end
 end
 

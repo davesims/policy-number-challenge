@@ -20,18 +20,18 @@ RSpec.describe PolicyOcr::DigitalInt do
     end
   end
   
-  describe '.from_string' do
+  describe '.from_pattern' do
     it 'returns correct digit instance for valid pattern' do
       zero_pattern = " _ " + "| |" + "|_|" + "   "
-      digit = described_class.from_string(zero_pattern)
+      digit = described_class.from_pattern(zero_pattern)
       
       expect(digit).to be_a(PolicyOcr::DigitalInt::Zero)
-      expect(digit.to_i).to eq(0)
+      expect(digit.int_value).to eq(0)
     end
     
     it 'returns nil for invalid pattern' do
       invalid_pattern = "xxx"
-      digit = described_class.from_string(invalid_pattern)
+      digit = described_class.from_pattern(invalid_pattern)
       
       expect(digit).to be_nil
     end
