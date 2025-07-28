@@ -1,61 +1,50 @@
 require 'spec_helper'
 
-RSpec.describe PolicyOcr::ParseLine do
+RSpec.describe PolicyOcr::Parser::ParsePolicyDocumentLines do
   describe '.call' do
-    let(:context) { build(:parse_line_context) }
+    let(:context) { build(:read_lines_context) }
     
-    it 'successfully processes line into digits' do
-      result = PolicyOcr::ParseLine.call(context)
+    it 'successfully processes raw text into policy numbers' do
+      result = PolicyOcr::Parser::ParsePolicyDocumentLines.call(context)
       
       expect(result).to be_success
-      expect(result.digits).to be_an(Array)
-      expect(result.digits.size).to eq(PolicyOcr::DIGITS_PER_LINE)
+      expect(result.all_policy_numbers).to be_an(Array)
     end
     
-    it 'converts digital patterns to DigitalInt instances' do
-      result = PolicyOcr::ParseLine.call(context)
+    it 'calls ParsePolicyNumber for each line group' do
+      expect(PolicyOcr::Parser::ParsePolicyNumber).to receive(:call).at_least(:once).and_call_original
       
-      result.digits.each do |digit|
-        expect(digit).to be_a(PolicyOcr::DigitalInt)
-      end
+      PolicyOcr::Parser::ParsePolicyDocumentLines.call(context)
     end
     
-    it 'handles zero patterns correctly' do
-      # Create a line with all zeros
-      zero_line = [
-        " _  _  _  _  _  _  _  _  _ ",
-        "| || || || || || || || || |",
-        "|_||_||_||_||_||_||_||_||_|",
-        "                           "
-      ]
+    it 'splits text by carriage return and groups by LINE_HEIGHT' do
+      raw_text = "line1\nline2\nline3\nline4\nline5\nline6\nline7\nline8"
+      context = build(:read_lines_context, raw_text: raw_text)
       
-      context = build(:parse_line_context, line: zero_line)
-      result = PolicyOcr::ParseLine.call(context)
+      result = PolicyOcr::Parser::ParsePolicyDocumentLines.call(context)
       
-      expect(result.digits.map(&:to_i)).to eq([0] * 9)
+      # Should create 2 groups of 4 lines each
+      expect(result.all_policy_numbers.size).to eq(2)
     end
   end
   
   describe 'private methods' do
-    let(:context) { build(:parse_line_context) }
-    let(:instance) { PolicyOcr::ParseLine.new(context) }
+    let(:context) { build(:read_lines_context) }
+    let(:instance) { PolicyOcr::Parser::ParsePolicyDocumentLines.new(context) }
     
-    describe '#digit_patterns' do
-      it 'transposes and formats digit patterns correctly' do
-        patterns = instance.send(:digital_number_strings)
+    describe '#lines' do
+      it 'splits raw text correctly' do
+        lines = instance.send(:lines)
         
-        expect(patterns.size).to eq(PolicyOcr::DIGITS_PER_LINE)
-        patterns.each do |pattern|
-          expect(pattern).to be_a(String)
-          expect(pattern.length).to eq(12) # 4 rows * 3 chars per row
-        end
+        expect(lines).to be_an(Array)
+        expect(lines.first.size).to eq(PolicyOcr::LINE_HEIGHT)
       end
     end
     
-    describe '#line' do
-      it 'memoizes line from context' do
-        expect(instance.send(:line)).to eq(context.line)
-        expect(instance.send(:line)).to be(instance.send(:line)) # same object
+    describe '#raw_text' do
+      it 'memoizes raw text from context' do
+        expect(instance.send(:raw_text)).to eq(context.raw_text)
+        expect(instance.send(:raw_text)).to be(instance.send(:raw_text)) # same object
       end
     end
   end

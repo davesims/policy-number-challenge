@@ -1,20 +1,21 @@
 require 'spec_helper'
 
 RSpec.describe PolicyOcr do
-  describe '.call' do
+  describe 'parsing policy documents' do
     let(:context) { build(:policy_ocr_context) }
     
     context 'when file exists' do
       it 'successfully reads and processes the file' do
-        result = PolicyOcr.call(context)
+        result = PolicyOcr::Parser::ParsePolicyDocument.call(context)
         
         expect(result).to be_success
+        expect(result.policy_document).to be_a(PolicyOcr::Policy::Document)
       end
       
-      it 'calls ReadLines with raw text' do
-        expect(PolicyOcr::ReadLines).to receive(:call).with(raw_text: anything).and_call_original
+      it 'calls ParsePolicyDocumentLines' do
+        expect(PolicyOcr::Parser::ParsePolicyDocumentLines).to receive(:call).and_call_original
         
-        PolicyOcr.call(context)
+        PolicyOcr::Parser::ParsePolicyDocument.call(context)
       end
     end
     
@@ -22,10 +23,9 @@ RSpec.describe PolicyOcr do
       let(:context) { build(:policy_ocr_context, file_path: 'nonexistent.txt') }
       
       it 'fails with error message' do
-        result = PolicyOcr.call(context)
-        
-        expect(result).to be_failure
-        expect(result.error).to include('No such file or directory')
+        expect {
+          PolicyOcr::Parser::ParsePolicyDocument.call(context)
+        }.to raise_error(Errno::ENOENT)
       end
     end
   end

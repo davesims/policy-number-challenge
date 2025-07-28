@@ -26,36 +26,14 @@ RSpec.describe PolicyOcr::DigitalInt do
       digit = described_class.from_pattern(zero_pattern)
       
       expect(digit).to be_a(PolicyOcr::DigitalInt::Zero)
-      expect(digit.int_value).to eq(0)
+      expect(digit.to_i).to eq(0)
     end
     
-    it 'returns nil for invalid pattern' do
+    it 'returns Invalid instance for invalid pattern' do
       invalid_pattern = "xxx"
       digit = described_class.from_pattern(invalid_pattern)
       
-      expect(digit).to be_nil
-    end
-  end
-  
-  describe '.print_pattern' do
-    it 'raises NotImplementedError for base class' do
-      expect { described_class.print_pattern }.to raise_error(NotImplementedError)
-    end
-  end
-  
-  describe '#to_i' do
-    it 'raises NotImplementedError for base class' do
-      instance = described_class.new
-      expect { instance.to_i }.to raise_error(NotImplementedError)
-    end
-  end
-  
-  describe '#print_pattern' do
-    it 'delegates to class method' do
-      digit = PolicyOcr::DigitalInt::Zero.new
-      expect(PolicyOcr::DigitalInt::Zero).to receive(:print_pattern)
-      
-      digit.print_pattern
+      expect(digit).to be_a(PolicyOcr::DigitalInt::Invalid)
     end
   end
 end

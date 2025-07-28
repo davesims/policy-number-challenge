@@ -1,51 +1,26 @@
 require 'spec_helper'
 
-RSpec.describe PolicyOcr::ReadLines do
+RSpec.describe PolicyOcr::Parser::ParsePolicyDocument do
   describe '.call' do
-    let(:context) { build(:read_lines_context) }
+    let(:context) { build(:policy_ocr_context) }
     
-    it 'successfully processes raw text into lines' do
-      result = PolicyOcr::ReadLines.call(context)
+    it 'successfully processes file into policy document' do
+      result = PolicyOcr::Parser::ParsePolicyDocument.call(context)
       
       expect(result).to be_success
-      expect(result.all_digits).to be_an(Array)
+      expect(result.policy_document).to be_a(PolicyOcr::Policy::Document)
     end
     
-    it 'calls ParseLine for each line group' do
-      expect(PolicyOcr::ParseLine).to receive(:call).at_least(:once).and_call_original
+    it 'calls ParsePolicyDocumentLines' do
+      expect(PolicyOcr::Parser::ParsePolicyDocumentLines).to receive(:call).and_call_original
       
-      PolicyOcr::ReadLines.call(context)
+      PolicyOcr::Parser::ParsePolicyDocument.call(context)
     end
     
-    it 'splits text by carriage return and groups by LINE_HEIGHT' do
-      raw_text = "line1\nline2\nline3\nline4\nline5\nline6\nline7\nline8"
-      context = build(:read_lines_context, raw_text: raw_text)
+    it 'reads file and processes into policy document' do
+      result = PolicyOcr::Parser::ParsePolicyDocument.call(context)
       
-      result = PolicyOcr::ReadLines.call(context)
-      
-      # Should create 2 groups of 4 lines each
-      expect(result.all_digits.size).to eq(2)
-    end
-  end
-  
-  describe 'private methods' do
-    let(:context) { build(:read_lines_context) }
-    let(:instance) { PolicyOcr::ReadLines.new(context) }
-    
-    describe '#lines' do
-      it 'splits raw text correctly' do
-        lines = instance.send(:lines)
-        
-        expect(lines).to be_an(Array)
-        expect(lines.first.size).to eq(PolicyOcr::LINE_HEIGHT)
-      end
-    end
-    
-    describe '#raw_text' do
-      it 'memoizes raw text from context' do
-        expect(instance.send(:raw_text)).to eq(context.raw_text)
-        expect(instance.send(:raw_text)).to be(instance.send(:raw_text)) # same object
-      end
+      expect(result.policy_document.policy_numbers).to be_an(Array)
     end
   end
 end
