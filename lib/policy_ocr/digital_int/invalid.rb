@@ -1,15 +1,22 @@
-class PolicyOcr::DigitalInt::Invalid < PolicyOcr::DigitalInt
-  def initialize(pattern:)
-    @pattern = pattern
-    @int_value = -1
-    super()
-  end
+module PolicyOcr::DigitalInt
+  class Invalid < Base
+    attr_reader :pattern
 
-  def pattern
-    @pattern
-  end
+    def initialize(pattern:)
+      @pattern = pattern
+      @int_value = nil
+    end
 
-  def to_s
-    "?"
+    def pattern
+      @pattern
+    end
+
+    def valid?
+      false
+    end
+
+    def to_s
+      "?"
+    end
   end
 end

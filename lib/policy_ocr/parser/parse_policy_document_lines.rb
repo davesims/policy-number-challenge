@@ -1,15 +1,15 @@
 # frozen_string_literal: true
 
 module PolicyOcr
-  module Parse
-    class PolicyDocumentLine
+  module Parser
+    class ParsePolicyDocumentLines
       include Interactor
 
       def call
-        all_digits = lines.map do |line|
-          PolicyOcr::Parse::PolicyNumber.call(line:).digits
+        all_policy_numbers = lines.map do |line|
+          PolicyOcr::Parser::ParsePolicyNumber.call(line:).policy_number
         end
-        context.all_digits = all_digits
+        context.all_policy_numbers = all_policy_numbers
       end
 
       private

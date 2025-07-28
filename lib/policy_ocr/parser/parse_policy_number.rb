@@ -1,15 +1,16 @@
 # frozen_string_literal: true
 
 module PolicyOcr
-  module Parse
-    class PolicyNumber
+  module Parser
+    class ParsePolicyNumber
       include Interactor
 
       def call
-        context.digits = digits
+        policy_number = PolicyOcr::Policy::Number.new(digital_ints)
+        context.policy_number = policy_number
       end
 
-      def digits
+      def digital_ints
         digital_patterns.map do |pattern|
           PolicyOcr::DigitalInt.from_pattern(pattern)
         end

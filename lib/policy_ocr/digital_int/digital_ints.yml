@@ -1,0 +1,80 @@
+digits:
+  - name: "zero"
+    value: 0
+    pattern: |-
+      " _ "
+      "| |"
+      "|_|"
+      "   "
+
+  - name: "one"
+    value: 1
+    pattern: |-
+      "   "
+      "  |"
+      "  |"
+      "   "
+
+  - name: "two"
+    value: 2
+    pattern: |-
+      " _ "
+      " _|"
+      "|_ "
+      "   "
+
+  - name: "three"
+    value: 3
+    pattern: |-
+      " _ "
+      " _|"
+      " _|"
+      "   "
+
+  - name: "four"
+    value: 4
+    pattern: |-
+      "   "
+      "|_|"
+      "  |"
+      "   "
+
+  - name: "five"
+    value: 5
+    pattern: |-
+      " _ "
+      "|_ "
+      " _|"
+      "   "
+
+  - name: "six"
+    value: 6
+    pattern: |-
+      " _ "
+      "|_ "
+      "|_|"
+      "   "
+
+  - name: "seven"
+    value: 7
+    pattern: |-
+      " _ "
+      "  |"
+      "  |"
+      "   "
+
+  - name: "eight"
+    value: 8
+    pattern: |-
+      " _ "
+      "|_|"
+      "|_|"
+      "   "
+
+  - name: "nine"
+    value: 9
+    pattern: |-
+      " _ "
+      "|_|"
+      " _|"
+      "   "
