@@ -32,9 +32,9 @@ module PolicyOcr
 
       digital_int_config["digits"].each do |digit_config|
         class_eval <<-RUBY
-          class #{digit_config["name"].split('_').map(&:capitalize).join} < Base
+          class #{digit_config["name"].split("_").map(&:capitalize).join} < Base
             def self.pattern 
-              # we'd want to find a cleaner yaml format for the pattern, but this makes it readable
+              # we"d want to find a cleaner yaml format for the pattern, but this makes it readable
               "#{digit_config["pattern"].delete("\n").delete("\"")}" 
             end
 

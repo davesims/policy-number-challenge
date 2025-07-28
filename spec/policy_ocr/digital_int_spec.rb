@@ -1,8 +1,8 @@
-require 'spec_helper'
+require "spec_helper"
 
 RSpec.describe PolicyOcr::DigitalInt do
-  describe '.all_numbers' do
-    it 'returns all digit classes' do
+  describe ".all_numbers" do
+    it "returns all digit classes" do
       expected_classes = [
         PolicyOcr::DigitalInt::Zero,
         PolicyOcr::DigitalInt::One,
@@ -20,8 +20,8 @@ RSpec.describe PolicyOcr::DigitalInt do
     end
   end
   
-  describe '.from_pattern' do
-    it 'returns correct digit instance for valid pattern' do
+  describe ".from_pattern" do
+    it "returns correct digit instance for valid pattern" do
       zero_pattern = " _ " + "| |" + "|_|" + "   "
       digit = described_class.from_pattern(zero_pattern)
       
@@ -29,7 +29,7 @@ RSpec.describe PolicyOcr::DigitalInt do
       expect(digit.to_i).to eq(0)
     end
     
-    it 'returns Invalid instance for invalid pattern' do
+    it "returns Invalid instance for invalid pattern" do
       invalid_pattern = "xxx"
       digit = described_class.from_pattern(invalid_pattern)
       
