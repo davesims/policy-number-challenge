@@ -28,4 +28,12 @@ module InteractorValidations
       end
     end
   end
+
+  # Validates using a custom block
+  #
+  # @param error_message [String] error message to display if validation fails
+  # @param block [Proc] validation logic that should return true/false
+  def validate(error_message, &block)
+    context.fail!(error: error_message) unless block.call
+  end
 end
