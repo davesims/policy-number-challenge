@@ -11,6 +11,11 @@ module PolicyOcr
     # all_policy_numbers.
     class ParsePolicyDocumentText
       include Interactor
+      include InteractorValidations
+
+      before do
+        validate_presence_of(:raw_text)
+      end
 
       def call
         all_policy_numbers = number_lines.map do |number_line|

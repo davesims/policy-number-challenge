@@ -2,10 +2,16 @@
 
 module PolicyOcr
   module Parser
-    # ParsePolicyNumberLine takes a four-line array 
-    # representing a single policy number
+    # ParsePolicyNumberLine takes a four-line array representing a single policy number
+    # and returns a PolicyOcr::Policy::Number object.
     class ParsePolicyNumberLine
       include Interactor
+      include InteractorValidations
+
+      before do
+        validate_presence_of(:number_line)
+        validate_size(:number_line, PolicyOcr::LINE_HEIGHT)
+      end
 
       def call
         policy_number = PolicyOcr::Policy::Number.new(digital_ints)

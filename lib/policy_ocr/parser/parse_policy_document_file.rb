@@ -7,6 +7,11 @@ module PolicyOcr
     # returned on result.policy_document.
     class ParsePolicyDocumentFile
       include Interactor
+      include InteractorValidations
+
+      before do
+        validate_presence_of(:file_path)
+      end
 
       def call
         result = PolicyOcr::Parser::ParsePolicyDocumentText.call(raw_text:)
@@ -16,6 +21,8 @@ module PolicyOcr
         else
           context.fail!(error: "Failed to parse policy document: #{result.error}")
         end
+      rescue Errno::ENOENT => e
+        context.fail!(error: e.message)
       end
 
       private

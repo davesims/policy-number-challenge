@@ -23,9 +23,10 @@ RSpec.describe PolicyOcr do
       let(:context) { build(:policy_ocr_context, file_path: "nonexistent.txt") }
       
       it "fails with error message" do
-        expect {
-          PolicyOcr::Parser::ParsePolicyDocumentFile.call(context)
-        }.to raise_error(Errno::ENOENT)
+        result = PolicyOcr::Parser::ParsePolicyDocumentFile.call(context)
+        
+        expect(result).to be_failure
+        expect(result.error).to include("No such file or directory")
       end
     end
   end

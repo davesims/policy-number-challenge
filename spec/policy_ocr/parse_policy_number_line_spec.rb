@@ -1,0 +1,60 @@
+require "spec_helper"
+
+RSpec.describe PolicyOcr::Parser::ParsePolicyNumberLine do
+  describe ".call" do
+    let(:valid_number_line) do
+      [
+        " _  _  _  _  _  _  _  _  _ ",
+        "| || || || || || || || || |",
+        "|_||_||_||_||_||_||_||_||_|",
+        "                         "
+      ]
+    end
+    
+    context "with valid inputs" do
+      it "successfully processes number line into policy number" do
+        result = PolicyOcr::Parser::ParsePolicyNumberLine.call(number_line: valid_number_line)
+        
+        expect(result).to be_success
+        expect(result.policy_number).to be_a(PolicyOcr::Policy::Number)
+      end
+      
+      it "creates digital ints from patterns" do
+        result = PolicyOcr::Parser::ParsePolicyNumberLine.call(number_line: valid_number_line)
+        
+        expect(result.policy_number.digital_ints.size).to eq(9)
+        expect(result.policy_number.digital_ints.first).to respond_to(:pattern)
+      end
+    end
+
+    context "with invalid inputs" do
+      it "fails when number_line is nil" do
+        result = PolicyOcr::Parser::ParsePolicyNumberLine.call(number_line: nil)
+        
+        expect(result).to be_failure
+        expect(result.error).to eq("number_line is required")
+      end
+
+      it "fails when number_line is empty array" do
+        result = PolicyOcr::Parser::ParsePolicyNumberLine.call(number_line: [])
+        
+        expect(result).to be_failure
+        expect(result.error).to eq("number_line cannot be empty")
+      end
+
+      it "fails when number_line has wrong size (too few lines)" do
+        result = PolicyOcr::Parser::ParsePolicyNumberLine.call(number_line: ["line1", "line2"])
+        
+        expect(result).to be_failure
+        expect(result.error).to eq("number_line must have exactly #{PolicyOcr::LINE_HEIGHT} elements")
+      end
+
+      it "fails when number_line has wrong size (too many lines)" do
+        result = PolicyOcr::Parser::ParsePolicyNumberLine.call(number_line: ["line1", "line2", "line3", "line4", "line5"])
+        
+        expect(result).to be_failure
+        expect(result.error).to eq("number_line must have exactly #{PolicyOcr::LINE_HEIGHT} elements")
+      end
+    end
+  end
+end

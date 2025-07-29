@@ -15,6 +15,7 @@ module PolicyOcr
 end
 
 # Load root level files first
+require_relative "interactor_validations"
 require_relative "validate_policy_number_checksum"
 
 # Load base classes first
