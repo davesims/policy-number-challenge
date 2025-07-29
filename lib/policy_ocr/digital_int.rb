@@ -21,7 +21,7 @@ module PolicyOcr
     # The load_all method will iterate over the configurations in the yaml file and the eval block will generate
     # classes with the general pattern:
     #
-    #  class Zero < PolicyOcr::DigitalInt::Base
+    #  class PolicyOcr::DigitalInt::Zero < PolicyOcr::DigitalInt::Base
     #    def intialize
     #      @int_value = 0
     #    end
@@ -40,7 +40,6 @@ module PolicyOcr
         class_eval <<-DIGITAL_INT
           class #{digit_config["name"].split("_").map(&:capitalize).join} < Base
             def self.pattern 
-              # we"d want to find a cleaner yaml format for the pattern, but this makes it readable
               "#{digit_config["pattern"].delete("\n").delete("\"")}" 
             end
 

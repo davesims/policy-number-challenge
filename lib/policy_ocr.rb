@@ -28,7 +28,7 @@ end
 require_relative "interactor/validations"
 require_relative "validate_policy_number_checksum"
 
-# Load base classes first
+# Load base classes next
 require_relative "policy_ocr/digital_int/base"
 require_relative "policy_ocr/digital_int/invalid"
 require_relative "policy_ocr/digital_int"
