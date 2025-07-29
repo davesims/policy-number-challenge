@@ -33,19 +33,21 @@ class PolicyOcrCLI < Thor
 
   desc "generate_policy_numbers", "Generate test policy numbers in ASCII art format"
   def generate_policy_numbers
-    20.times do |i|
-      digits = generate_valid_number
-      puts render_number(digits)
+    valid = 20.times.map do |i|
+      generate_valid_number
     end
 
-    6.times do |i|
-      digits = generate_invalid_digits_number
-      puts render_number(digits)
+    invalid_digits = 6.times.map do |i|
+      generate_invalid_digits_number
     end
 
-    4.times do |i|
-      digits = generate_invalid_checksum_number
-      puts render_number(digits)
+    invalid_checksums = 4.times.map do |i|
+      generate_invalid_checksum_number
+    end
+
+    all_digits = valid + invalid_digits + invalid_checksums
+    all_digits.shuffle.each do |digit|
+      puts render_number(digit)
     end
   end
 
