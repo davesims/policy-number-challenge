@@ -31,8 +31,8 @@ class PolicyOcrCLI < Thor
     end
   end
 
-  desc "generate", "Generate test policy numbers in ASCII art format"
-  def generate
+  desc "generate_policy_numbers", "Generate test policy numbers in ASCII art format"
+  def generate_policy_numbers
     20.times do |i|
       digits = generate_valid_number
       puts render_number(digits)
@@ -59,17 +59,33 @@ class PolicyOcrCLI < Thor
   end
 
   def generate_valid_number
-    base = Array.new(8) { rand(10) }
-    (0..9).each do |check_digit|
-      test_digits = base + [check_digit]
-      return test_digits if checksum_valid?(test_digits)
+    loop do
+      # Generate first 8 digits randomly
+      base = Array.new(8) { rand(10) }
+      
+      # Calculate partial sum: d1×1 + d2×2 + ... + d8×8
+      partial_sum = base.each_with_index.sum { |digit, i| digit * (i + 1) }
+      
+      # Find d9 such that (partial_sum + d9×9) mod 11 = 0
+      target_remainder = (-partial_sum) % 11
+      
+      (0..9).each do |candidate|
+        if (candidate * 9) % 11 == target_remainder
+          result = base + [candidate]
+          # Verify it's actually valid
+          if checksum_valid?(result)
+            return result.map { |d| PolicyOcr::DigitalInt.from_int(d) }
+          end
+        end
+      end
+      
+      # If no valid candidate found, try new base digits
     end
-    # Fallback
-    [7, 1, 1, 1, 1, 1, 1, 1, 1]
   end
 
+
   def generate_invalid_digits_number
-    digits = Array.new(9) { rand(10) }
+    digits = Array.new(9) { |i| PolicyOcr::DigitalInt.from_int(rand(10)) }
     # Replace 1-2 random digits with Invalid patterns
     wrong_patterns = ["|||", " | ", "___", " _ ", "|_|", "| |", "_|_", "__|", "|__", "_| "]
     rand(1..3).times do
@@ -82,37 +98,23 @@ class PolicyOcrCLI < Thor
     valid_digits = generate_valid_number
     # Change the last digit to make checksum invalid
     invalid_digits = valid_digits.dup
-    invalid_digits[-1] = (invalid_digits[-1] + rand(1..5)) % 10
+    last_digit_value = invalid_digits[-1].to_i
+    new_digit_value = (last_digit_value + rand(1..5)) % 10
+    invalid_digits[-1] = PolicyOcr::DigitalInt.from_int(new_digit_value)
     
-    # Ensure it's actually invalid
-    if checksum_valid?(invalid_digits)
-      [1, 2, 3, 4, 5, 6, 7, 8, 9] # Known invalid
-    else
-      invalid_digits
-    end
+    invalid_digits
   end
 
   def render_number(digits)
-    lines = ["", "", "", ""]
-    digits.each do |digit|
-      if digit.is_a?(PolicyOcr::DigitalInt::Invalid)
-        # Use the invalid pattern directly
-        pattern_str = digit.pattern
-        pattern = pattern_str.scan(/.{3}/) # Split into chunks of 3 characters
-      elsif digit.is_a?(Integer)
-        digit_obj = PolicyOcr::DigitalInt.from_int(digit)
-        pattern_str = digit_obj.pattern
-        pattern = pattern_str.scan(/.{3}/) # Split into chunks of 3 characters
-      else
-        # Fallback for nil or other cases
-        pattern = ["   ", "   ", "   ", "   "]
-      end
-      
-      4.times do |i|
-        lines[i] += (pattern[i] || "   ")
-      end
+    patterns = digits.map do |digit|
+      pattern = digit.pattern
+      # Ensure pattern is exactly 12 characters (4 lines × 3 chars)
+      pattern = pattern.ljust(12) if pattern.length < 12
+      pattern[0, 12] # Take only first 12 chars if longer
     end
-    lines.join("\n") + "\n"
+    
+    lines = patterns.map { |p| p.scan(/.{3}/) }.transpose
+    lines.map { |line| line.join }.join("\n") + "\n"
   end
 end
 
