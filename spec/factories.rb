@@ -11,8 +11,8 @@ FactoryBot.define do
     raw_text { fixture("sample") }
   end
 
-  factory :parse_line_context, parent: :interactor_context do
-    line do
+  factory :policy_number_line_context, parent: :interactor_context do
+    number_line do
       [
         " _  _  _  _  _  _  _  _  _ ",
         "| || || || || || || || || |",

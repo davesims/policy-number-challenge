@@ -2,65 +2,64 @@ require "spec_helper"
 
 RSpec.describe PolicyOcr::Parser::ParsePolicyNumberLine do
   describe ".call" do
-    let(:valid_number_line) do
-      [
-        " _  _  _  _  _  _  _  _  _ ",
-        "| || || || || || || || || |",
-        "|_||_||_||_||_||_||_||_||_|",
-        "                         "
-      ]
-    end
-    
+    let(:context) { build(:policy_number_line_context, index:) }
+    let(:index) { 0 }
+    subject { described_class.call(context) }
+
     context "with valid inputs" do
       it "successfully processes number line into policy number" do
-        result = PolicyOcr::Parser::ParsePolicyNumberLine.call(number_line: valid_number_line, index: 0)
-        
-        expect(result).to be_success
-        expect(result.policy_number).to be_a(PolicyOcr::Policy::Number)
+        expect(subject).to be_success
+        expect(subject.policy_number).to be_a(PolicyOcr::Policy::Number)
       end
       
       it "creates digital ints from patterns" do
-        result = PolicyOcr::Parser::ParsePolicyNumberLine.call(number_line: valid_number_line, index: 1)
-        
-        expect(result.policy_number.digital_ints.size).to eq(9)
-        expect(result.policy_number.digital_ints.first).to respond_to(:pattern)
+        expect(subject.policy_number.digital_ints.size).to eq(9)
+        expect(subject.policy_number.digital_ints.first).to respond_to(:pattern)
       end
     end
 
     context "with invalid inputs" do
-      it "fails when number_line is nil" do
-        result = PolicyOcr::Parser::ParsePolicyNumberLine.call(number_line: nil)
-        
-        expect(result).to be_failure
-        expect(result.error).to eq("number_line is required")
+      describe "when number_line is nil" do 
+        let (:context) { build(:policy_number_line_context, number_line: nil) }
+
+        it "fails" do
+          expect(subject).to be_failure
+          expect(subject.error).to eq("number_line is required")
+        end
       end
 
-      it "fails when number_line is empty array" do
-        result = PolicyOcr::Parser::ParsePolicyNumberLine.call(number_line: [])
-        
-        expect(result).to be_failure
-        expect(result.error).to eq("number_line cannot be empty")
+      describe "when number_line is empty" do 
+        let (:context) { build(:policy_number_line_context, number_line: []) }
+
+        it "fails" do
+          expect(subject).to be_failure
+          expect(subject.error).to eq("number_line cannot be empty")
+        end
       end
 
-      it "fails when number_line has wrong size (too few lines)" do
-        result = PolicyOcr::Parser::ParsePolicyNumberLine.call(number_line: ["line1", "line2"], index: 0)
-        
-        expect(result).to be_failure
-        expect(result.error).to eq("number_line must have exactly #{PolicyOcr::LINE_HEIGHT} elements")
+      describe "when number_line has wrong size" do
+        let(:context) { build(:policy_number_line_context, number_line: ["line1", "line2"], index:) }
+
+        it "fails" do
+          expect(subject).to be_failure
+          expect(subject.error).to eq("number_line must have exactly #{PolicyOcr::LINE_HEIGHT} elements")
+        end
       end
 
-      it "fails when number_line has wrong size (too many lines)" do
-        result = PolicyOcr::Parser::ParsePolicyNumberLine.call(number_line: ["line1", "line2", "line3", "line4", "line5"], index: 0)
-        
-        expect(result).to be_failure
-        expect(result.error).to eq("number_line must have exactly #{PolicyOcr::LINE_HEIGHT} elements")
+      describe "fails when number_line has wrong size (too many lines)" do
+        let(:context) { build(:policy_number_line_context, number_line: ["line1", "line2", "line3", "line4", "line5"], index:) }
+        it "fails" do
+          expect(subject).to be_failure
+          expect(subject.error).to eq("number_line must have exactly #{PolicyOcr::LINE_HEIGHT} elements")
+        end
       end
 
-      it "fails when index is missing" do
-        result = PolicyOcr::Parser::ParsePolicyNumberLine.call(number_line: valid_number_line)
-        
-        expect(result).to be_failure
-        expect(result.error).to eq("index is required")
+      describe "when the index is missing" do 
+        let(:context) { build(:policy_number_line_context) }
+        it "fails" do
+          expect(subject).to be_failure
+          expect(subject.error).to eq("index is required")
+        end
       end
     end
 
