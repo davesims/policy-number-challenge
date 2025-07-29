@@ -10,6 +10,8 @@ module PolicyOcr
         context.policy_number = policy_number
       end
 
+      private 
+
       def digital_ints
         digital_patterns.map do |pattern|
           PolicyOcr::DigitalInt.from_pattern(pattern)
@@ -24,7 +26,7 @@ module PolicyOcr
           .map(&:join) # join each group of characters back into a string, which will be the digit pattern
       end
 
-      def line = @line ||= context.line
+      def line = context.line
     end
   end
 end

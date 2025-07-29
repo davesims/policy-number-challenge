@@ -5,6 +5,9 @@
 module PolicyOcr
   module Policy
     class Number
+      INVALID_DIGITS_MESSAGE = "ILL"
+      CHECKSUM_ERROR_MESSAGE = "ERR"
+
       attr_reader :digital_ints
 
       def initialize(digital_ints)
@@ -17,9 +20,24 @@ module PolicyOcr
         digital_ints.all?(&:valid?)
       end
 
-      def to_s
-        digital_ints.map(&:to_s).join
+      def checksum?
+        PolicyOcr::ValidatePolicyNumberChecksum.call(policy_number: self).success?
       end
+
+      def to_s
+        "#{digital_ints.map(&:to_s).join} #{message}"
+      end
+
+      def to_a
+        digital_ints.map(&:int_value)
+      end
+
+      def message
+        return INVALID_DIGITS_MESSAGE unless valid?
+        return CHECKSUM_ERROR_MESSAGE unless checksum?
+        ""
+      end
+
     end
   end
 end

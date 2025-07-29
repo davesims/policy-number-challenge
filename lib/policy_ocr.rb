@@ -15,7 +15,7 @@ module PolicyOcr
 end
 
 # Load root level files first
-require_relative "validate_policy_number"
+require_relative "validate_policy_number_checksum"
 
 # Load base classes first
 require_relative "policy_ocr/digital_int/base"
@@ -31,11 +31,9 @@ require_relative "policy_ocr/parser/parse_policy_document"
 require_relative "policy_ocr/parser/parse_policy_document_lines"
 require_relative "policy_ocr/parser/parse_policy_number"
 
-PolicyOcr::DigitalInt.load_all
-
-result = PolicyOcr::Parser::ParsePolicyDocument.call(file_path: "./spec/fixtures/policy_numbers.txt")
-if result.success?
-  puts result.policy_document
-else
-  puts "Failed to read the file: #{result.error}"
-end
+# result = PolicyOcr::Parser::ParsePolicyDocument.call(file_path: "./spec/fixtures/policy_numbers.txt")
+# if result.success?
+#   puts result.policy_document
+# else
+#   puts "Failed to read the file: #{result.error}"
+# end

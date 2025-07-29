@@ -1,21 +1,25 @@
 # frozen_string_literal: true
+require "yaml"
+
 module PolicyOcr
   module DigitalInt
 
-    # This is far too clever and magical and I would probably not approve in a production PR, BUT some advantages might be:
+    # This is far too clever and magical and I would probably not use this approach in a production PR. 
+    # That said, it's a good exercise in metaprogramming, and some advantages of this might be:
     #   - The YAML file is more readable than lots of class definitions
     #   - It would allow easy addition of new digital chars, and correction or modifications of existing ones
     #   - It lays the groundwork to support an entirely different set of digital chars if needed
-    #   - YES, This is still too much ruby magic, and would definitely not be the right initial approach
-    #   - YES, it was kind of fun to do
+    #   - Yes, this is still too much ruby magic, and would definitely not be the right initial approach
+    #   - Yes, it was kind of fun to do
     #
     # Alternative approaches:
-    #   - Define each class manually, either in separate classes under lib/policy_ocr/digital_int/, or with 
+    #   - Define each class explicitly, either in separate classes under lib/policy_ocr/digital_int/, or with 
     #     all class definitions in this file.
-    #   - A simple array of hashes, with digit names, int values and patterns, and then a single class that
-    #     takes the digit name and returns the pattern and value.
+    #   - Instead of POROs for each int, use a simple array of hashes, with digit names, int values and patterns,
+    #     and then a single class that takes the digit name and returns the pattern and value.
     #
-    # This will generate classes with the general pattern:
+    # The load_all method will iterate over the configurations in the yaml file and the eval block will generate
+    # classes with the general pattern:
     #
     #  class Zero < PolicyOcr::DigitalInt::Base
     #    def intialize
@@ -23,7 +27,9 @@ module PolicyOcr
     #    end
     #
     #    def self.pattern
-    #      @pattern = "  _ | | |_|     "
+    #      @pattern = " _ " + 
+    #                 "| |" + 
+    #                 "|_|"
     #    end
     #  end
     #  
@@ -31,7 +37,7 @@ module PolicyOcr
       digital_int_config = YAML.load(File.read(PolicyOcr::DIGITAL_INTS_CONFIG_PATH))
 
       digital_int_config["digits"].each do |digit_config|
-        class_eval <<-RUBY
+        class_eval <<-DIGITAL_INT
           class #{digit_config["name"].split("_").map(&:capitalize).join} < Base
             def self.pattern 
               # we"d want to find a cleaner yaml format for the pattern, but this makes it readable
@@ -42,7 +48,7 @@ module PolicyOcr
               @int_value = #{digit_config["value"]}
             end
           end
-        RUBY
+        DIGITAL_INT
       end
     end
 
@@ -59,6 +65,19 @@ module PolicyOcr
 
       klass.new
     end
+
+    def self.from_int(int)
+      klass = all_numbers.find { |k| k.new.to_i == int }
+      
+      if klass.nil?
+        raise ArgumentError, "Invalid digit: #{int}. Must be 0-9."
+      end
+
+      klass.new
+    end
+
+    # Load all digital int classes whenever this module is evaluated.
+    load_all
   end
 end
       
