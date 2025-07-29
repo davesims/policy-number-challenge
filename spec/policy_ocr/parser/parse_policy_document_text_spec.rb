@@ -4,7 +4,7 @@ RSpec.describe PolicyOcr::Parser::ParsePolicyDocumentText do
   describe ".call" do
     let(:context) { build(:read_lines_context, raw_text: raw_text) }
     let(:raw_text) { "line1\nline2\nline3\nline4\nline5\nline6\nline7\nline8" }
-    let(:subject) { PolicyOcr::Parser::ParsePolicyDocumentText.call(context) }
+    let(:subject) { described_class.call(context) }
     
     context "with valid inputs" do
       it "successfully processes raw text into policy numbers" do

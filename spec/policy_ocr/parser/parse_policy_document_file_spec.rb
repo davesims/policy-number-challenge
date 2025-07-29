@@ -3,7 +3,7 @@ require "spec_helper"
 RSpec.describe PolicyOcr::Parser::ParsePolicyDocumentFile do
   describe ".call" do
     let(:context) { build(:policy_ocr_context) }
-    subject { PolicyOcr::Parser::ParsePolicyDocumentFile.call(context) }
+    subject { described_class.call(context) }
     
     context "with valid inputs" do
       it "successfully processes file into policy document" do
