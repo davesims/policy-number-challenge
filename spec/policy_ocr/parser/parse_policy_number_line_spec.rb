@@ -64,36 +64,25 @@ RSpec.describe PolicyOcr::Parser::ParsePolicyNumberLine do
     end
 
     context "when StandardError occurs during parsing" do
-      it "returns Invalid policy number and fails context" do
-        # Create invalid number_line that will cause parsing errors
-        malformed_line = [
-          "invalid", # This will cause issues when trying to parse digit patterns
-          "data",
-          "here",
-          "test"
-        ]
-        
-        result = PolicyOcr::Parser::ParsePolicyNumberLine.call(number_line: malformed_line, index: 0)
-        
-        expect(result).to be_failure
-        expect(result.policy_number).to be_a(PolicyOcr::Policy::Number::Invalid)
-        expect(result.error).to include("Failed to parse policy number line:")
+      describe "when the line is malformed" do
+        let(:malformed_line) { ["invalid", "data", "here", "test"] }
+        let(:context) { build(:policy_number_line_context, number_line: malformed_line, index:) }
+
+        it "returns Invalid policy number and fails context" do
+          expect(subject).to be_failure
+          expect(subject.policy_number).to be_a(PolicyOcr::Policy::Number::Invalid)
+          expect(subject.error).to include("Failed to parse policy number line:")
+        end
       end
 
-      it "handles errors gracefully when digital patterns are malformed" do
-        # Create lines that will pass validation but fail during digital pattern extraction
-        lines_with_different_lengths = [
-          "short",
-          "this is a much longer line that will cause issues",
-          "med",
-          "x"
-        ]
-        
-        result = PolicyOcr::Parser::ParsePolicyNumberLine.call(number_line: lines_with_different_lengths, index: 1)
-        
-        expect(result).to be_failure
-        expect(result.policy_number).to be_a(PolicyOcr::Policy::Number::Invalid)
-        expect(result.error).to match(/Failed to parse policy number line:/)
+      describe "when digital patterns are malformed" do
+        let(:lines_with_different_lengths) { [ "short", "this is a much longer line that will cause issues", "med", "x" ]}
+        let(:context) { build(:policy_number_line_context, number_line: lines_with_different_lengths, index:1) }
+        it "handles errors gracefully" do
+          expect(subject).to be_failure
+          expect(subject.policy_number).to be_a(PolicyOcr::Policy::Number::Invalid)
+          expect(subject.error).to match(/Failed to parse policy number line:/)
+        end
       end
     end
   end
