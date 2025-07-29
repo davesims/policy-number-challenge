@@ -9,7 +9,7 @@ RSpec.describe PolicyOcr::Parser::ParsePolicyDocumentText do
         result = PolicyOcr::Parser::ParsePolicyDocumentText.call(context)
         
         expect(result).to be_success
-        expect(result.all_policy_numbers).to be_an(Array)
+        expect(result.policy_numbers).to be_an(Array)
       end
       
       it "calls ParsePolicyNumberLine for each line group" do
@@ -25,7 +25,7 @@ RSpec.describe PolicyOcr::Parser::ParsePolicyDocumentText do
         result = PolicyOcr::Parser::ParsePolicyDocumentText.call(context)
         
         # Should create 2 groups of 4 lines each
-        expect(result.all_policy_numbers.size).to eq(2)
+        expect(result.policy_numbers.size).to eq(2)
       end
     end
 

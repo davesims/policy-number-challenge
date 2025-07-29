@@ -2,9 +2,10 @@
 
 module PolicyOcr
   module Parser
-    # Takes a file path on context and reads the file, into raw_text,
-    # then parses the text into a PolicyOcr::Policy::Document, which is
-    # returned on result.policy_document.
+    # Reads a policy document file and parses it into a PolicyOcr::Policy::Document.
+    #
+    # @param context [Interactor::Context] must contain file_path
+    # @return [Interactor::Context] result with policy_document set on success, or error message on failure
     class ParsePolicyDocumentFile
       include Interactor
       include InteractorValidations
@@ -14,14 +15,18 @@ module PolicyOcr
       end
 
       def call
+        PolicyOcr.logger.info("Reading policy document file: #{file_path}")
         result = PolicyOcr::Parser::ParsePolicyDocumentText.call(raw_text:)
 
         if result.success?
-          context.policy_document = PolicyOcr::Policy::Document.new(result.all_policy_numbers)
+          PolicyOcr.logger.info("Successfully parsed policy document: #{file_path}")
+          context.policy_document = PolicyOcr::Policy::Document.new(result.policy_numbers)
         else
+          PolicyOcr.logger.error("Failed to parse policy document: #{result.error}")
           context.fail!(error: "Failed to parse policy document: #{result.error}")
         end
       rescue Errno::ENOENT => e
+        PolicyOcr.logger.error("File not found: #{file_path} - #{e.message}")
         context.fail!(error: e.message)
       end
 

@@ -56,5 +56,39 @@ RSpec.describe PolicyOcr::Parser::ParsePolicyNumberLine do
         expect(result.error).to eq("number_line must have exactly #{PolicyOcr::LINE_HEIGHT} elements")
       end
     end
+
+    context "when StandardError occurs during parsing" do
+      it "returns Invalid policy number and fails context" do
+        # Create invalid number_line that will cause parsing errors
+        malformed_line = [
+          "invalid", # This will cause issues when trying to parse digit patterns
+          "data",
+          "here",
+          "test"
+        ]
+        
+        result = PolicyOcr::Parser::ParsePolicyNumberLine.call(number_line: malformed_line)
+        
+        expect(result).to be_failure
+        expect(result.policy_number).to be_a(PolicyOcr::Policy::Number::Invalid)
+        expect(result.error).to include("Failed to parse policy number line:")
+      end
+
+      it "handles errors gracefully when digital patterns are malformed" do
+        # Create lines that will pass validation but fail during digital pattern extraction
+        lines_with_different_lengths = [
+          "short",
+          "this is a much longer line that will cause issues",
+          "med",
+          "x"
+        ]
+        
+        result = PolicyOcr::Parser::ParsePolicyNumberLine.call(number_line: lines_with_different_lengths)
+        
+        expect(result).to be_failure
+        expect(result.policy_number).to be_a(PolicyOcr::Policy::Number::Invalid)
+        expect(result.error).to match(/Failed to parse policy number line:/)
+      end
+    end
   end
 end

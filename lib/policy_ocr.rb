@@ -3,6 +3,7 @@
 require "interactor"
 require "pry"
 require "yaml"
+require "logger"
 
 # Use the PolicyOcr parent namespace to encapsulate shared constants, avoid "magic strings"
 # and generally act as a config would.
@@ -12,6 +13,15 @@ module PolicyOcr
   LINE_HEIGHT = 4.freeze
   CARRIAGE_RETURN = "\n".freeze
   DIGITAL_INTS_CONFIG_PATH = "./lib/policy_ocr/digital_int/digital_ints.yml".freeze
+
+  def self.logger
+    @logger ||= Logger.new("policy_ocr.log").tap do |log|
+      log.level = Logger::INFO
+      log.formatter = proc do |severity, datetime, progname, msg|
+        "[#{datetime.strftime('%Y-%m-%d %H:%M:%S')}] #{severity}: #{msg}\n"
+      end
+    end
+  end
 end
 
 # Load root level files first

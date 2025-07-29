@@ -2,13 +2,6 @@
 
 module PolicyOcr
   module Parser
-    # ParsePolicyDodcumentLines takes the raw text of a policy document
-    # and splits it on carriage returns, slicing the lines into groups of 
-    # LINE_HEIGHT (4 lines) to represent each policy number, then sends each
-    # group of lines to ParsePolicyNumber to parse the policy number.
-    #
-    # It returns an array of Policy::Number objects on the result as 
-    # all_policy_numbers.
     class ParsePolicyDocumentText
       include Interactor
       include InteractorValidations
@@ -17,11 +10,20 @@ module PolicyOcr
         validate_presence_of(:raw_text)
       end
 
+      # Parses raw text of a policy document into policy numbers.
+      #
+      # Takes raw text and splits it on carriage returns, slicing the lines into 
+      # groups of LINE_HEIGHT (4 lines) to represent each policy number, then sends 
+      # each group of lines to ParsePolicyNumberLine to parse the policy number.
+      #
+      # @param context [Interactor::Context] must contain raw_text
+      # @return [Interactor::Context] result with policy_numbers array set
       def call
-        all_policy_numbers = number_lines.map do |number_line|
-          PolicyOcr::Parser::ParsePolicyNumberLine.call(number_line:).policy_number
+        PolicyOcr.logger.info("Parsing policy document text...")
+        policy_numbers = number_lines.map.with_index do |number_line, index|
+          PolicyOcr::Parser::ParsePolicyNumberLine.call(number_line:, index:).policy_number
         end
-        context.all_policy_numbers = all_policy_numbers
+        context.policy_numbers = policy_numbers
       end
 
       private

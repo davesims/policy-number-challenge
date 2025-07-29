@@ -2,20 +2,37 @@
 
 module PolicyOcr
   module Parser
-    # ParsePolicyNumberLine takes a four-line array representing a single policy number
-    # and returns a PolicyOcr::Policy::Number object.
     class ParsePolicyNumberLine
       include Interactor
       include InteractorValidations
 
       before do
-        validate_presence_of(:number_line)
+        validate_presence_of(:number_line, :index)
         validate_size(:number_line, PolicyOcr::LINE_HEIGHT)
       end
 
+      # Parses a PolicyOcr::LINE_HEIGHT-length array representing a single policy number.
+      #
+      # Example input:
+      #  number_line = [
+      #  " _  _     _  _  _  _  _ ",
+      #  "|_||_||_||_ |_   ||_||_|",
+      #  " _| _|  | _||_|  ||_| _|",
+      #  "                        "
+      #  ]
+      #
+      # @param context [Interactor::Context] must contain number_line and index
+      # @return [Interactor::Context] result with policy_number set
       def call
+        PolicyOcr.logger.info("Parsing policy number at line #{index}...")
         policy_number = PolicyOcr::Policy::Number.new(digital_ints)
         context.policy_number = policy_number
+      rescue StandardError => e
+        # If something goes really wrong, set the Invalid policy number
+        # log an error and continue processing. 
+        context.policy_number = PolicyOcr::Policy::Number::Invalid.new
+        PolicyOcr.logger.error("Failed to parse policy number at line #{index}: #{e.message}")
+        context.fail!(error: "Failed to parse policy number line: #{e.message}")
       end
 
       private 
@@ -40,6 +57,7 @@ module PolicyOcr
       end
 
       def number_line = context.number_line
+      def index = context.index
     end
   end
 end

@@ -38,6 +38,12 @@ module PolicyOcr
         ""
       end
 
+      class Invalid < Number
+        def initialize
+          digital_ints = Array.new(9, PolicyOcr::DigitalInt::Invalid.new(pattern: "---"))
+          super(digital_ints)
+        end
+      end
     end
   end
 end
