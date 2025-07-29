@@ -2,11 +2,14 @@
 
 module PolicyOcr
   module Parser
-    class ParsePolicyDocument
+    # Takes a file path on context and reads the file, into raw_text,
+    # then parses the text into a PolicyOcr::Policy::Document, which is
+    # returned on result.policy_document.
+    class ParsePolicyDocumentFile
       include Interactor
 
       def call
-        result = PolicyOcr::Parser::ParsePolicyDocumentLines.call(raw_text:)
+        result = PolicyOcr::Parser::ParsePolicyDocumentText.call(raw_text:)
 
         if result.success?
           context.policy_document = PolicyOcr::Policy::Document.new(result.all_policy_numbers)

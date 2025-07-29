@@ -9,23 +9,23 @@ module PolicyOcr
     #
     # It returns an array of Policy::Number objects on the result as 
     # all_policy_numbers.
-    class ParsePolicyDocumentLines
+    class ParsePolicyDocumentText
       include Interactor
 
       def call
-        all_policy_numbers = document_lines.map do |line|
-          PolicyOcr::Parser::ParsePolicyNumber.call(line:).policy_number
+        all_policy_numbers = number_lines.map do |number_line|
+          PolicyOcr::Parser::ParsePolicyNumberLine.call(number_line:).policy_number
         end
         context.all_policy_numbers = all_policy_numbers
       end
 
       private
 
-      # document_lines is the entire document represented as an N x LINE_HEIGHT
+      # number_lines is the entire document represented as an N x LINE_HEIGHT
       # array, where N is the number of policy numbers in the document, and 
       # LINE_HEIGHT is the number of lines (4) per policy number, i.e., the height
       # of a digit pattern in chars.
-      def document_lines 
+      def number_lines 
         raw_text
           .split(PolicyOcr::CARRIAGE_RETURN)
           .each_slice(PolicyOcr::LINE_HEIGHT)

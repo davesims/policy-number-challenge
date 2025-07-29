@@ -17,7 +17,7 @@ class PolicyOcrCLI < Thor
     end
     
     begin
-      result = PolicyOcr::Parser::ParsePolicyDocument.call(file_path: file)
+      result = PolicyOcr::Parser::ParsePolicyDocumentFile.call(file_path: file)
       
       if result.success?
         puts result.policy_document
@@ -31,7 +31,7 @@ class PolicyOcrCLI < Thor
     end
   end
 
-  desc "generate_policy_numbers", "Generate test policy numbers in ASCII art format"
+  desc "generate_policy_numbers", "Generate test policy numbers in ASCII digital format"
   def generate_policy_numbers
     valid = 20.times.map do |i|
       generate_valid_number
@@ -53,11 +53,9 @@ class PolicyOcrCLI < Thor
 
   private
 
-  def checksum_valid?(digits)
-    return false if digits.any? { |d| d.nil? || d.is_a?(PolicyOcr::DigitalInt::Invalid) }
-    policy_number = PolicyOcr::Policy::Number.new(digits.map { |d| PolicyOcr::DigitalInt.from_int(d) })
-    result = PolicyOcr::ValidatePolicyNumberChecksum.call(policy_number: policy_number)
-    result.success?
+  def checksum_valid?(digital_ints)
+    policy_number = PolicyOcr::Policy::Number.new(digital_ints)
+    PolicyOcr::ValidatePolicyNumberChecksum.call(policy_number:).success?
   end
 
   def generate_valid_number
@@ -75,20 +73,18 @@ class PolicyOcrCLI < Thor
         if (candidate * 9) % 11 == target_remainder
           result = base + [candidate]
           # Verify it's actually valid
-          if checksum_valid?(result)
-            return result.map { |d| PolicyOcr::DigitalInt.from_int(d) }
+          digital_ints = result.map { |d| PolicyOcr::DigitalInt.from_int(d) }
+          if checksum_valid?(digital_ints)
+            return digital_ints
           end
         end
       end
-      
-      # If no valid candidate found, try new base digits
     end
   end
 
-
   def generate_invalid_digits_number
     digits = Array.new(9) { |i| PolicyOcr::DigitalInt.from_int(rand(10)) }
-    # Replace 1-2 random digits with Invalid patterns
+    # Replace random digits with Invalid patterns
     wrong_patterns = ["|||", " | ", "___", " _ ", "|_|", "| |", "_|_", "__|", "|__", "_| "]
     rand(1..3).times do
       digits[rand(9)] = PolicyOcr::DigitalInt::Invalid.new(pattern: wrong_patterns.sample)
@@ -110,7 +106,6 @@ class PolicyOcrCLI < Thor
   def render_number(digits)
     patterns = digits.map do |digit|
       pattern = digit.pattern
-      # Ensure pattern is exactly 12 characters (4 lines × 3 chars)
       pattern = pattern.ljust(12) if pattern.length < 12
       pattern[0, 12] # Take only first 12 chars if longer
     end

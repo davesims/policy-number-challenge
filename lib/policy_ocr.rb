@@ -27,13 +27,7 @@ require_relative "policy_ocr/policy/number"
 require_relative "policy_ocr/policy/document"
 
 # Load parse namespace files
-require_relative "policy_ocr/parser/parse_policy_document"
-require_relative "policy_ocr/parser/parse_policy_document_lines"
-require_relative "policy_ocr/parser/parse_policy_number"
+require_relative "policy_ocr/parser/parse_policy_document_file"
+require_relative "policy_ocr/parser/parse_policy_document_text"
+require_relative "policy_ocr/parser/parse_policy_number_line"
 
-# result = PolicyOcr::Parser::ParsePolicyDocument.call(file_path: "./spec/fixtures/policy_numbers.txt")
-# if result.success?
-#   puts result.policy_document
-# else
-#   puts "Failed to read the file: #{result.error}"
-# end

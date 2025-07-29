@@ -6,16 +6,16 @@ RSpec.describe PolicyOcr do
     
     context "when file exists" do
       it "successfully reads and processes the file" do
-        result = PolicyOcr::Parser::ParsePolicyDocument.call(context)
+        result = PolicyOcr::Parser::ParsePolicyDocumentFile.call(context)
         
         expect(result).to be_success
         expect(result.policy_document).to be_a(PolicyOcr::Policy::Document)
       end
       
-      it "calls ParsePolicyDocumentLines" do
-        expect(PolicyOcr::Parser::ParsePolicyDocumentLines).to receive(:call).and_call_original
+      it "calls ParsePolicyDocumentText" do
+        expect(PolicyOcr::Parser::ParsePolicyDocumentText).to receive(:call).and_call_original
         
-        PolicyOcr::Parser::ParsePolicyDocument.call(context)
+        PolicyOcr::Parser::ParsePolicyDocumentFile.call(context)
       end
     end
     
@@ -24,7 +24,7 @@ RSpec.describe PolicyOcr do
       
       it "fails with error message" do
         expect {
-          PolicyOcr::Parser::ParsePolicyDocument.call(context)
+          PolicyOcr::Parser::ParsePolicyDocumentFile.call(context)
         }.to raise_error(Errno::ENOENT)
       end
     end

@@ -4,7 +4,7 @@ require "yaml"
 module PolicyOcr
   module DigitalInt
 
-    # This is far too clever and magical and I would probably not use this approach in a production PR. 
+    # This is too clever and magical and I would probably not use this approach in a production PR. 
     # That said, it's a good exercise in metaprogramming, and some advantages of this might be:
     #   - The YAML file is more readable than lots of class definitions
     #   - It would allow easy addition of new digital chars, and correction or modifications of existing ones
