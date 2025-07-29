@@ -8,7 +8,7 @@ module PolicyOcr
     # @return [Interactor::Context] result with policy_document set on success, or error message on failure
     class ParsePolicyDocumentFile
       include Interactor
-      include InteractorValidations
+      include Interactor::Validations
 
       before do
         validate_presence_of(:file_path)

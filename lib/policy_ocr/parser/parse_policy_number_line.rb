@@ -4,7 +4,7 @@ module PolicyOcr
   module Parser
     class ParsePolicyNumberLine
       include Interactor
-      include InteractorValidations
+      include Interactor::Validations
 
       before do
         validate_presence_of(:number_line, :index)

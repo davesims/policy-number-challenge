@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Common validation methods for Interactor classes
-module InteractorValidations
+module Interactor::Validations
 
   # Validates that a context collection has the expected size
   #

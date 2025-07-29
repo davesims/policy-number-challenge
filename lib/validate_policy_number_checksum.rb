@@ -3,9 +3,10 @@
 #
 class PolicyOcr::ValidatePolicyNumberChecksum
   include Interactor
-  include InteractorValidations
+  include Interactor::Validations
 
   before do
+    validate_presence_of(:policy_number)
     validate("policy number contains invalid digits") do
       context.policy_number.to_a.none?(&:nil?)
     end

@@ -4,7 +4,7 @@ module PolicyOcr
   module Parser
     class ParsePolicyDocumentText
       include Interactor
-      include InteractorValidations
+      include Interactor::Validations
 
       before do
         validate_presence_of(:raw_text)
