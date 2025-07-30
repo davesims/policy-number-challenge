@@ -34,21 +34,23 @@ module PolicyOcr
     #  end
     #  
     def self.load_all
-      digital_int_config = YAML.load(File.read(PolicyOcr::DIGITAL_INTS_CONFIG_PATH))
-
-      digital_int_config["digits"].each do |digit_config|
+      digital_int_definitions["digits"].each do |digit_definition|
         class_eval <<-DIGITAL_INT
-          class #{digit_config["name"].split("_").map(&:capitalize).join} < Base
+          class #{digit_definition["name"].split("_").map(&:capitalize).join} < Base
             def self.pattern 
-              "#{digit_config["pattern"].delete("\n").delete("\"")}" 
+              "#{digit_definition["pattern"].delete("\n").delete("\"")}" 
             end
 
             def initialize
-              @int_value = #{digit_config["value"]}
+              @int_value = #{digit_definition["value"]}
             end
           end
         DIGITAL_INT
       end
+    end
+
+    def self.digital_int_definitions
+      @digital_int_definitions ||= YAML.load(File.read(PolicyOcr::DIGITAL_INTS_DEFINITION_PATH))
     end
 
     def self.all_numbers
@@ -59,6 +61,7 @@ module PolicyOcr
       klass = all_numbers.find { |k| k.pattern == pattern }
 
       if klass.nil?
+        PolicyOcr.logger_for(self).warn "Invalid pattern: #{pattern}. Returning Invalid instance."
         return PolicyOcr::DigitalInt::Invalid.new(pattern:)
       end
 
@@ -66,12 +69,12 @@ module PolicyOcr
     end
 
     def self.from_int(int)
-      klass = all_numbers.find { |k| k.new.to_i == int }
-      
-      if klass.nil?
-        raise ArgumentError, "Invalid digit: #{int}. Must be 0-9."
+      unless int.between?(0, 9)
+        PolicyOcr.logger_for(self).error "Invalid int value given: #{int}."
+        return PolicyOcr::DigitalInt::Invalid.new(pattern: "?")
       end
 
+      klass = all_numbers.find { |k| k.new.to_i == int }
       klass.new
     end
 

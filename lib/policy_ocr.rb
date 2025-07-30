@@ -12,17 +12,22 @@ module PolicyOcr
   DIGIT_WIDTH = 3.freeze
   LINE_HEIGHT = 4.freeze
   CARRIAGE_RETURN = "\n".freeze
-  DIGITAL_INTS_CONFIG_PATH = "./lib/policy_ocr/digital_int/digital_ints.yml".freeze
+  DIGITAL_INTS_DEFINITION_PATH = "./lib/policy_ocr/digital_int/digital_ints.yml".freeze
+  LOG_PATH = "policy_ocr.log".freeze
 
-  def self.logger
-    @logger ||= Logger.new("policy_ocr.log").tap do |log|
-      log.level = Logger::INFO
+  def self.logger_for(klass)
+    Logger.new(LOG_PATH).tap do |log|
+      log.level = Logger::DEBUG
       log.formatter = proc do |severity, datetime, progname, msg|
-        "[#{datetime.strftime('%Y-%m-%d %H:%M:%S')}] #{severity}: #{msg}\n"
+        full_name = klass.respond_to?(:name) ? klass.name : klass.class.name
+        "[#{full_name} #{datetime.strftime('%Y-%m-%d %H:%M:%S')}] #{severity}: #{msg}\n"
       end
     end
   end
 end
+
+# I've been preferring explicit requires to Dir/glob, as it makes the dependencies clearer
+# and avoids potential load order issues. 
 
 # Load root level files first
 require_relative "interactor/validations"

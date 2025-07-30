@@ -25,6 +25,14 @@ class PolicyOcrCLI < Thor
         puts "Error: #{result.error}"
         exit 1
       end
+
+      if result.parser_errors&.any?
+        puts "\nThe process encountered parser errors:"
+        result.parser_errors.each do |error|
+          puts "  - #{error}"
+        end
+      end
+
     rescue => e
       puts "Error parsing file: #{e.message}"
       exit 1
@@ -95,11 +103,9 @@ class PolicyOcrCLI < Thor
   def generate_invalid_checksum_number
     valid_digits = generate_valid_number
     # Change the last digit to make checksum invalid
-    invalid_digits = valid_digits.dup
-    last_digit_value = invalid_digits[-1].to_i
+    last_digit_value = valid_digits[-1].to_i
     new_digit_value = (last_digit_value + rand(1..5)) % 10
     invalid_digits[-1] = PolicyOcr::DigitalInt.from_int(new_digit_value)
-    
     invalid_digits
   end
 

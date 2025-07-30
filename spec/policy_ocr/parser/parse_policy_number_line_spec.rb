@@ -71,7 +71,7 @@ RSpec.describe PolicyOcr::Parser::ParsePolicyNumberLine do
         it "returns Invalid policy number and fails context" do
           expect(subject).to be_failure
           expect(subject.policy_number).to be_a(PolicyOcr::Policy::Number::Invalid)
-          expect(subject.error).to include("Failed to parse policy number line:")
+          expect(subject.error).to include("Malformed number line at #{index}")
         end
       end
 
@@ -81,7 +81,7 @@ RSpec.describe PolicyOcr::Parser::ParsePolicyNumberLine do
         it "handles errors gracefully" do
           expect(subject).to be_failure
           expect(subject.policy_number).to be_a(PolicyOcr::Policy::Number::Invalid)
-          expect(subject.error).to match(/Failed to parse policy number line:/)
+          expect(subject.error).to include("Malformed number line")
         end
       end
     end

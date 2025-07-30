@@ -1,0 +1,16 @@
+ _  _  _  _  _  _  _  _  _ 
+| || || || || || || || || |
+|_||_||_||_||_||_||_||_||_|
+                           
+                           
+  |  |  |  |  |  |  |  |  |
+  |  |  |  |  |  |  |  |  |
+                           
+ _  _  _  _  _  _  _  _  _ 
+ _| _| _| _| _| _| _| _| _|
+|_ |_ |_ |_ |_ |_ |_ |_ |_ 
+
+This is not valid OCR content
+Just some random text
+That should not parse correctly
+But it does have four lines
