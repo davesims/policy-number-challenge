@@ -57,10 +57,10 @@ bundle exec rspec
 - **Invalid**: Handles unrecognizable digit patterns
 
 #### Validation
-- **ValidatePolicyNumberChecksum**: Implements weighted checksum validation using the formula: `(d1×1 + d2×2 + ... + d9×9) mod 11 = 0`
+- **ValidatePolicyNumberChecksum**: Implements weighted checksum validation using the formula: `(d1ï¿½1 + d2ï¿½2 + ... + d9ï¿½9) mod 11 = 0`
 
 #### CLI Interface
-- **PolicyOcrCLI**: Thor-based command-line interface for parsing and generating policy numbers
+- **PolicyOcr::Cli**: Thor-based command-line interface for parsing and generating policy numbers
 
 ### Design Patterns
 

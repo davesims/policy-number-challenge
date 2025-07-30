@@ -4,6 +4,6 @@
 # Add the lib directory to the load path
 $LOAD_PATH.unshift File.expand_path("lib", __dir__)
 
-require "policy_ocr_cli"
+require "policy_ocr/cli"
 
-PolicyOcrCLI.start(ARGV)
+PolicyOcr::Cli.start(ARGV)

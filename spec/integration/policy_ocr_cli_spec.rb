@@ -1,7 +1,7 @@
 require "spec_helper"
 require "tempfile"
 
-RSpec.describe "PolicyOcrCLI Integration - parse command" do
+RSpec.describe "PolicyOcr::Cli Integration - parse command" do
   let(:file_path) { "spec/fixtures/sample.txt" }
   let(:exit_code) { $?.exitstatus }
   let(:line_matcher) { /^\d{9} $|^\d{9} ERR$|^\d*\?+\d* ILL$|\?{9} ILL$|^123456789$/ }
