@@ -3,7 +3,7 @@ require "spec_helper"
 RSpec.describe PolicyOcr::DigitalInt::One do
   describe ".pattern" do
     it "returns correct pattern" do
-      expected = "     |  |   "
+      expected = "     |  |"
       expect(described_class.pattern).to eq(expected)
     end
   end

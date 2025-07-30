@@ -1,7 +1,7 @@
 require "spec_helper"
 
 RSpec.describe PolicyOcr::DigitalInt do
-  let(:pattern) { " _ | ||_|   "}
+  let(:pattern) { " _ | ||_|"}
   let(:digit) { described_class.from_pattern(pattern) }
 
   describe ".all_numbers" do

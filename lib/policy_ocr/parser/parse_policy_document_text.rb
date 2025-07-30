@@ -37,7 +37,7 @@ module PolicyOcr
       def number_lines 
         raw_text
           .split(PolicyOcr::CARRIAGE_RETURN)
-          .reject.with_index { |_, i| (i + 1) % PolicyOcr::LINE_HEIGHT + 1 == 0 } # remove every fourth line as they are empty
+          .reject.with_index { |_, i| (i + 1) % 4 == 0 } # remove every fourth line as they are empty
           .each_slice(PolicyOcr::LINE_HEIGHT)
           .to_a
       end

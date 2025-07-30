@@ -65,7 +65,7 @@ RSpec.describe PolicyOcr::Parser::ParsePolicyNumberLine do
 
     context "when StandardError occurs during parsing" do
       context "when the line is malformed" do
-        let(:malformed_line) { ["invalid", "data", "here", "test"] }
+        let(:malformed_line) { ["invalid", "data", "here"] }
         let(:context) { build(:policy_number_line_context, number_line: malformed_line, index:) }
 
         it "returns Invalid policy number and fails context" do
@@ -76,7 +76,7 @@ RSpec.describe PolicyOcr::Parser::ParsePolicyNumberLine do
       end
 
       context "when digital patterns are malformed" do
-        let(:lines_with_different_lengths) { [ "short", "this is a much longer line that will cause issues", "med", "x" ]}
+        let(:lines_with_different_lengths) { [ "short", "this is a much longer line that will cause issues", "med"] }
         let(:context) { build(:policy_number_line_context, number_line: lines_with_different_lengths, index:1) }
         it "handles errors gracefully" do
           expect(subject).to be_failure

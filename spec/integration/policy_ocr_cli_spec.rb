@@ -81,9 +81,9 @@ RSpec.describe "PolicyOcrCLI Integration - parse command" do
     context "when file has malformed content" do
       let(:file_path) { "spec/fixtures/malformed_content.txt" }
       it "handles files with incorrect line counts" do
-        expect(subject).to include("Malformed number line")
         expect(subject).to include("Malformed number line at 3: element size differs (7 should be 10)")
-        expect(subject).to include("Malformed number line at 2: element size differs (0 should be 9)")
+        expect(subject).to include("Malformed number line at 3: element size differs (7 should be 10)")
+        expect(subject).to include("Malformed number line")
       end
     end
   end
