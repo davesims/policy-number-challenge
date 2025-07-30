@@ -22,7 +22,7 @@ RSpec.describe PolicyOcr::Parser::ParsePolicyDocumentFile do
     end
 
     context "with invalid inputs" do
-      describe "when file_path is nil" do 
+      context "when file_path is nil" do 
         let(:context) { build(:policy_ocr_context, file_path: nil) }
         it "fails" do
           expect(subject).to be_failure
@@ -30,7 +30,7 @@ RSpec.describe PolicyOcr::Parser::ParsePolicyDocumentFile do
         end
       end
 
-      describe "when file_path is empty" do 
+      context "when file_path is empty" do 
         let(:context) { build(:policy_ocr_context, file_path: "") }
         it "fails" do
           expect(subject).to be_failure
@@ -38,7 +38,7 @@ RSpec.describe PolicyOcr::Parser::ParsePolicyDocumentFile do
         end
       end
 
-      describe "when file does not exist" do 
+      context "when file does not exist" do 
         let(:context) { build(:policy_ocr_context, file_path: "nonexistent.txt") }
         it "fails" do
           expect(subject).to be_failure

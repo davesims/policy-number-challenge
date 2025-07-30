@@ -11,14 +11,14 @@ RSpec.describe PolicyOcr::Policy::Document do
   let(:policy_numbers) {[valid_number, invalid_number]}
   let(:document) { PolicyOcr::Policy::Document.new(policy_numbers) }
 
-  context "#initialize" do
-    describe "with valid policy numbers" do 
+  describe "#initialize" do
+    context "with valid policy numbers" do 
       it "accepts an array of policy numbers" do
         expect(document.policy_numbers).to eq(policy_numbers)
       end
     end
 
-    describe "with an empty array" do 
+    context "with an empty array" do 
       let(:policy_numbers) { [] }
       it "accepts an empty array" do
         expect(document.policy_numbers).to eq([])
@@ -26,8 +26,8 @@ RSpec.describe PolicyOcr::Policy::Document do
     end
   end
 
-  context "#to_s" do
-    describe "with single policy number" do
+  describe "#to_s" do
+    context "with single policy number" do
       let(:policy_numbers) { [valid_number] }
       it "returns the policy number as string" do
         expect(document.to_s).to eq("711111111 ")

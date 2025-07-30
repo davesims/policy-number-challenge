@@ -17,7 +17,7 @@ RSpec.describe "PolicyOcrCLI Integration - parse command" do
     }
   end
 
-  describe "parse" do
+  describe "#parse" do
     context "with valid policy numbers" do
       let(:lines) { subject.strip.split("\n") }
 
@@ -53,9 +53,9 @@ RSpec.describe "PolicyOcrCLI Integration - parse command" do
     context "with mixed scenarios" do
       let(:file_path) { "spec/fixtures/mixed_policy_numbers.txt" }
       it "handles combination of valid, invalid digits, and checksum errors" do
-        expect(subject).to include(" ")    # Valid numbers
-        expect(subject).to include("ERR")  # Checksum errors  
-        expect(subject).to include("ILL")  # Invalid digits
+        expect(subject).to include(" ")
+        expect(subject).to include("ERR")
+        expect(subject).to include("ILL")
         expect(exit_code).to eq(0)
       end
     end

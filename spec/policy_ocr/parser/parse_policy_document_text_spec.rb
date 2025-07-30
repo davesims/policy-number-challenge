@@ -24,7 +24,7 @@ RSpec.describe PolicyOcr::Parser::ParsePolicyDocumentText do
 
     context "with invalid inputs" do
 
-      describe "when raw_text is nil" do
+      context "when raw_text is nil" do
         let(:raw_text) { nil }
         it "fails" do
           expect(subject).to be_failure
@@ -32,7 +32,7 @@ RSpec.describe PolicyOcr::Parser::ParsePolicyDocumentText do
         end
       end
 
-      describe "when raw_text is empty" do
+      context "when raw_text is empty" do
         let(:raw_text) { "" }
         it "fails" do
           expect(subject).to be_failure
@@ -40,7 +40,7 @@ RSpec.describe PolicyOcr::Parser::ParsePolicyDocumentText do
         end
       end
 
-      describe "when raw_text is blank" do
+      context "when raw_text is blank" do
         let(:raw_text) { "   \n\t  " }
         it "fails" do
           expect(subject).to be_failure
