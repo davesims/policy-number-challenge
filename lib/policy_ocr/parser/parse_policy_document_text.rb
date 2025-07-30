@@ -22,10 +22,7 @@ module PolicyOcr
         PolicyOcr.logger_for(self).info("Parsing policy document text...")
         policy_numbers = number_lines.map.with_index do |number_line, index|
           result = PolicyOcr::Parser::ParsePolicyNumberLine.call(number_line:, index:)
-          unless result.success?
-            context.parser_errors ||= []
-            context.parser_errors << result.error
-          end
+          log_parser_errors(result) if result.failure?
           result.policy_number
         end
         context.policy_numbers = policy_numbers
@@ -40,8 +37,14 @@ module PolicyOcr
       def number_lines 
         raw_text
           .split(PolicyOcr::CARRIAGE_RETURN)
+          .reject.with_index { |_, i| (i + 1) % 4 == 0 }
           .each_slice(PolicyOcr::LINE_HEIGHT)
           .to_a
+      end
+
+      def log_parser_errors(result)
+        context.parser_errors ||= []
+        context.parser_errors << result.error
       end
 
       def raw_text = context.raw_text

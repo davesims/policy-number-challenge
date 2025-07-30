@@ -5,7 +5,6 @@ digits:
       " _ "
       "| |"
       "|_|"
-      "   "
 
   - name: "one"
     value: 1
@@ -13,7 +12,6 @@ digits:
       "   "
       "  |"
       "  |"
-      "   "
 
   - name: "two"
     value: 2
@@ -21,7 +19,6 @@ digits:
       " _ "
       " _|"
       "|_ "
-      "   "
 
   - name: "three"
     value: 3
@@ -29,7 +26,6 @@ digits:
       " _ "
       " _|"
       " _|"
-      "   "
 
   - name: "four"
     value: 4
@@ -37,7 +33,6 @@ digits:
       "   "
       "|_|"
       "  |"
-      "   "
 
   - name: "five"
     value: 5
@@ -45,7 +40,6 @@ digits:
       " _ "
       "|_ "
       " _|"
-      "   "
 
   - name: "six"
     value: 6
@@ -53,7 +47,6 @@ digits:
       " _ "
       "|_ "
       "|_|"
-      "   "
 
   - name: "seven"
     value: 7
@@ -61,7 +54,6 @@ digits:
       " _ "
       "  |"
       "  |"
-      "   "
 
   - name: "eight"
     value: 8
@@ -69,7 +61,6 @@ digits:
       " _ "
       "|_|"
       "|_|"
-      "   "
 
   - name: "nine"
     value: 9
@@ -77,4 +68,3 @@ digits:
       " _ "
       "|_|"
       " _|"
-      "   "

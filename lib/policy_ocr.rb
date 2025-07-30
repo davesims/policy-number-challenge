@@ -10,7 +10,7 @@ require "logger"
 module PolicyOcr
   DIGITS_PER_LINE = 9.freeze
   DIGIT_WIDTH = 3.freeze
-  LINE_HEIGHT = 4.freeze
+  LINE_HEIGHT = 3.freeze
   CARRIAGE_RETURN = "\n".freeze
   DIGITAL_INTS_DEFINITION_PATH = "./lib/policy_ocr/digital_int/digital_ints.yml".freeze
   LOG_PATH = "policy_ocr.log".freeze

@@ -18,7 +18,6 @@ module PolicyOcr
       #  " _  _     _  _  _  _  _ ",
       #  "|_||_||_||_ |_   ||_||_|",
       #  " _| _|  | _||_|  ||_| _|",
-      #  "                        "
       #  ]
       #
       # @param context [Interactor::Context] must contain number_line and index
