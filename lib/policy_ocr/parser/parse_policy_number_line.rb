@@ -37,22 +37,20 @@ module PolicyOcr
 
       private 
 
-      # digital_ints creates an array of DigitalInt objects 
-      # from the matching digit patterns.
+      # digital_ints creates an array of DigitalInt objects from the matching digit patterns.
       def digital_ints
         digital_patterns.map do |pattern|
           PolicyOcr::DigitalInt.from_pattern(pattern)
         end
       end
 
-      # digital_patterns extracts the digit patterns representing one 
-      # policy number from the number_line. These can be used to 
-      # create DigitalInt objects.
+      # digital_patterns extracts the digit patterns representing one policy number from the number_line.
+      # These can be used to create DigitalInt objects.
       def digital_patterns
         number_line
           .map(&:chars) # convert each string to chars
           .map {|l| l.each_slice(PolicyOcr::DIGIT_WIDTH).to_a } # split each line into char arrays of digit width
-          .transpose # transpose the outer array from 4x9 to 9x4, which will group characters by digit
+          .transpose # transpose the outer array from 3x9 to 9x3, which will group characters by digit
           .map(&:join) # join each group of characters back into a string, which will be the digit pattern
       end
 

@@ -13,7 +13,7 @@ module PolicyOcr
       # Parses raw text of a policy document into policy numbers.
       #
       # Takes raw text and splits it on carriage returns, slicing the lines into 
-      # groups of LINE_HEIGHT (4 lines) to represent each policy number, then sends 
+      # groups of LINE_HEIGHT (3 lines) to represent each policy number, then sends 
       # each group of lines to ParsePolicyNumberLine to parse the policy number.
       #
       # @param context [Interactor::Context] must contain raw_text
@@ -22,7 +22,7 @@ module PolicyOcr
         PolicyOcr.logger_for(self).info("Parsing policy document text...")
         policy_numbers = number_lines.map.with_index do |number_line, index|
           result = PolicyOcr::Parser::ParsePolicyNumberLine.call(number_line:, index:)
-          log_parser_errors(result) if result.failure?
+          record_parser_errors(result) if result.failure?
           result.policy_number
         end
         context.policy_numbers = policy_numbers
@@ -32,17 +32,17 @@ module PolicyOcr
 
       # number_lines is the entire document represented as an N x LINE_HEIGHT
       # array, where N is the number of policy numbers in the document, and 
-      # LINE_HEIGHT is the number of lines (4) per policy number, i.e., the height
+      # LINE_HEIGHT is the number of lines (3) per policy number, i.e., the height
       # of a digit pattern in chars.
       def number_lines 
         raw_text
           .split(PolicyOcr::CARRIAGE_RETURN)
-          .reject.with_index { |_, i| (i + 1) % 4 == 0 }
+          .reject.with_index { |_, i| (i + 1) % PolicyOcr::LINE_HEIGHT + 1 == 0 } # remove every fourth line as they are empty
           .each_slice(PolicyOcr::LINE_HEIGHT)
           .to_a
       end
 
-      def log_parser_errors(result)
+      def record_parser_errors(result)
         context.parser_errors ||= []
         context.parser_errors << result.error
       end

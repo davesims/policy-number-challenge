@@ -35,7 +35,7 @@ RSpec.describe PolicyOcr do
     it "defines expected constants" do
       expect(PolicyOcr::DIGITS_PER_LINE).to eq(9)
       expect(PolicyOcr::DIGIT_WIDTH).to eq(3)
-      expect(PolicyOcr::LINE_HEIGHT).to eq(4)
+      expect(PolicyOcr::LINE_HEIGHT).to eq(3)
     end
   end
 end
