@@ -24,14 +24,11 @@ module PolicyOcr
       # @return [Interactor::Context] result with policy_number set
       def call
         PolicyOcr.logger_for(self).debug("Parsing policy number at line #{index}...")
-        policy_number = PolicyOcr::Policy::Number.new(digital_ints)
-        context.policy_number = policy_number
-        PolicyOcr.logger_for(self).debug("Parsed policy number #{policy_number.to_s} at line #{index}...")
+        context.policy_number = PolicyOcr::Policy::Number.new(digital_ints)
+        PolicyOcr.logger_for(self).debug("Parsed policy number #{context.policy_number.to_s} at line #{index}...")
       rescue StandardError => e
-        # If something goes really wrong, set the Invalid policy number
-        # log an error and continue processing. 
-        context.policy_number = PolicyOcr::Policy::Number::Invalid.new
         PolicyOcr.logger_for(self).error("Failed to parse policy number at line #{index}: #{e.message}")
+        context.policy_number = PolicyOcr::Policy::Number::Invalid.new
         context.fail!(error: "Malformed number line at #{index}: #{e.message} #{e.backtrace.first}")
       end
 
