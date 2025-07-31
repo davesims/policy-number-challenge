@@ -19,17 +19,29 @@ module PolicyOcr
     # @param context [Interactor::Context] must contain:
     #   - content: the text content to write to the file
     #   - input_file: the original input file path (used to generate output filename)
-    #   - output_dir: optional output directory (default: "parsed_files")
     # @return [Interactor::Context] with output_file path set
     def call
-      output_dir = context.output_dir || "parsed_files"
-      FileUtils.mkdir_p(output_dir)
-
-      base_name = File.basename(context.input_file, ".*")
-      output_filename = File.join(output_dir, "#{base_name}_parsed.txt")
-
+      create_output_dir
       File.write(output_filename, context.content)
       context.output_file = output_filename
+    end
+
+    private 
+
+    def create_output_dir
+      FileUtils.mkdir_p(output_dir) unless Dir.exist?(output_dir)
+    end
+
+    def base_name
+      File.basename(context.input_file, ".*")
+    end
+
+    def output_filename
+      File.join(output_dir, "#{base_name}_parsed.txt")
+    end
+
+    def output_dir
+      PolicyOcr::PARSED_FILES_DIR
     end
   end
 end

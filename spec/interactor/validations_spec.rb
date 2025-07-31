@@ -30,16 +30,17 @@ RSpec.describe Interactor::Validations do
     end
 
     context "when validation passes" do
+      subject(:result) { test_class.call(test_key: "valid_value") }
+
       it "does not call on_validation_failed hook" do
-        result = test_class.call(test_key: "valid_value")
         expect(result).to be_success
         expect($hook_called).to be false
       end
     end
 
     context "when value is nil" do
+      subject(:result) { test_class.call(test_key: nil) }
       it "calls on_validation_failed hook before failing" do
-        result = test_class.call(test_key: nil)
         expect(result).to be_failure
         expect($hook_called).to be true
         expect(result.error).to eq("test_key is required")
@@ -47,8 +48,8 @@ RSpec.describe Interactor::Validations do
     end
 
     context "when value is empty" do
+      subject(:result) { test_class.call(test_key: "") }
       it "calls on_validation_failed hook before failing" do
-        result = test_class.call(test_key: "")
         expect(result).to be_failure
         expect($hook_called).to be true
         expect(result.error).to eq("test_key cannot be empty")
@@ -56,8 +57,8 @@ RSpec.describe Interactor::Validations do
     end
 
     context "when value is blank" do
+      subject(:result) { test_class.call(test_key: "   ") }
       it "calls on_validation_failed hook before failing" do
-        result = test_class.call(test_key: "   ")
         expect(result).to be_failure
         expect($hook_called).to be true
         expect(result.error).to eq("test_key cannot be blank")
@@ -75,16 +76,16 @@ RSpec.describe Interactor::Validations do
     end
 
     context "when validation passes" do
+      subject(:result) { test_class.call(test_array: [1, 2, 3]) }
       it "does not call on_validation_failed hook" do
-        result = test_class.call(test_array: [1, 2, 3])
         expect(result).to be_success
         expect($hook_called).to be false
       end
     end
 
     context "when size is incorrect" do
+      subject(:result) { test_class.call(test_array: [1, 2]) }
       it "calls on_validation_failed hook before failing" do
-        result = test_class.call(test_array: [1, 2])
         expect(result).to be_failure
         expect($hook_called).to be true
         expect(result.error).to eq("test_array must have exactly 3 elements")
@@ -93,6 +94,8 @@ RSpec.describe Interactor::Validations do
   end
 
   describe "#validate" do
+    subject(:result) { test_class.call }
+
     context "when validation passes" do
       let(:test_class) do
         Class.new(test_class_with_hook) do
@@ -103,7 +106,6 @@ RSpec.describe Interactor::Validations do
       end
 
       it "does not call on_validation_failed hook" do
-        result = test_class.call
         expect(result).to be_success
         expect($hook_called).to be false
       end
@@ -119,7 +121,6 @@ RSpec.describe Interactor::Validations do
       end
 
       it "calls on_validation_failed hook before failing" do
-        result = test_class.call
         expect(result).to be_failure
         expect($hook_called).to be true
         expect(result.error).to eq("custom error")
@@ -143,8 +144,9 @@ RSpec.describe Interactor::Validations do
       end
     end
 
+    subject(:result) { test_class_without_hook.call(test_key: nil) }
+
     it "works normally without the hook" do
-      result = test_class_without_hook.call(test_key: nil)
       expect(result).to be_failure
       expect(result.error).to eq("test_key is required")
     end

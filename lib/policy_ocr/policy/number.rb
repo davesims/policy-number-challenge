@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-
 #
 # This class represents a single parsed policy number as an array of DigitalChar objects.
 #

@@ -14,6 +14,7 @@ module PolicyOcr
   CARRIAGE_RETURN = "\n"
   DIGITAL_INTS_DEFINITION_PATH = "./lib/policy_ocr/digital_int/digital_ints.yml"
   LOG_PATH = "policy_ocr.log"
+  PARSED_FILES_DIR = "parsed_files"
 
   def self.current_log_path
     Thread.current[:policy_ocr_log_path] || LOG_PATH

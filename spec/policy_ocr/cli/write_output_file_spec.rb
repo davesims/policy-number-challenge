@@ -58,30 +58,6 @@ RSpec.describe PolicyOcr::Cli::WriteOutputFile do
       end
     end
 
-    context "with custom output directory" do
-      subject(:result) { described_class.call(content:, input_file:, output_dir:) }
-
-      it "succeeds" do
-        expect(result.success?).to be true
-      end
-
-      it "creates the custom output directory" do
-        result
-        expect(Dir.exist?("test_output")).to be true
-      end
-
-      it "generates correct output filename in custom directory" do
-        result
-        expect(result.output_file).to eq("test_output/sample_parsed.txt")
-      end
-
-      it "writes content to the custom output file" do
-        result
-        written_content = File.read(result.output_file)
-        expect(written_content).to eq(content)
-      end
-    end
-
     context "with different input file extensions" do
       let(:input_file) { "data/policies.csv" }
 
