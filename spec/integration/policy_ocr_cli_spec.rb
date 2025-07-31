@@ -5,7 +5,7 @@ require "spec_helper"
 require "tempfile"
 
 RSpec.describe "PolicyOcr::Cli Integration - parse command" do
-  subject { `policy_ocr parse #{file_path}` }
+  subject(:output) { `policy_ocr parse #{file_path}` }
 
   let(:file_path) { "spec/fixtures/sample.txt" }
   let(:exit_code) { $CHILD_STATUS.exitstatus }
@@ -25,8 +25,8 @@ RSpec.describe "PolicyOcr::Cli Integration - parse command" do
       let(:lines) { subject.strip.split("\n") }
 
       it "outputs valid numbers with trailing space" do
-        expect(subject).to include("000000000 ")
-        expect(subject).to include("111111111 ")
+        expect(output).to include("000000000 ")
+        expect(output).to include("111111111 ")
         lines.each do |line|
           expect(line).to match(line_matcher)
         end
@@ -39,8 +39,8 @@ RSpec.describe "PolicyOcr::Cli Integration - parse command" do
       let(:file_path) { "spec/fixtures/invalid_digits.txt" }
 
       it "outputs question marks with ILL suffix" do
-        expect(subject).to include("ILL")
-        expect(subject).to include("?")
+        expect(output).to include("ILL")
+        expect(output).to include("?")
         expect(exit_code).to eq(0)
       end
     end
@@ -49,7 +49,7 @@ RSpec.describe "PolicyOcr::Cli Integration - parse command" do
       let(:file_path) { "spec/fixtures/checksum_errors.txt" }
 
       it "outputs numbers with ERR suffix" do
-        expect(subject).to include("ERR")
+        expect(output).to include("ERR")
         expect(exit_code).to eq(0)
       end
     end
@@ -58,9 +58,9 @@ RSpec.describe "PolicyOcr::Cli Integration - parse command" do
       let(:file_path) { "spec/fixtures/mixed_policy_numbers.txt" }
 
       it "handles combination of valid, invalid digits, and checksum errors" do
-        expect(subject).to include(" ")
-        expect(subject).to include("ERR")
-        expect(subject).to include("ILL")
+        expect(output).to include(" ")
+        expect(output).to include("ERR")
+        expect(output).to include("ILL")
         expect(exit_code).to eq(0)
       end
     end
@@ -71,7 +71,7 @@ RSpec.describe "PolicyOcr::Cli Integration - parse command" do
       let(:file_path) { "nonexistent_file.txt" }
 
       it "displays error message and exits with code 1" do
-        expect(subject).to include("Error: File 'nonexistent_file.txt' not found")
+        expect(output).to include("Error: File 'nonexistent_file.txt' not found")
         expect(exit_code).to eq(1)
       end
     end
@@ -80,7 +80,7 @@ RSpec.describe "PolicyOcr::Cli Integration - parse command" do
       let(:file_path) { "spec/fixtures/empty.txt" }
 
       it "handles empty files gracefully" do
-        expect(subject).to include("Error: Failed to parse policy document: raw_text cannot be empty")
+        expect(output).to include("Error: Failed to parse policy document: raw_text cannot be empty")
       end
     end
 
@@ -88,9 +88,9 @@ RSpec.describe "PolicyOcr::Cli Integration - parse command" do
       let(:file_path) { "spec/fixtures/malformed_content.txt" }
 
       it "handles files with incorrect line counts" do
-        expect(subject).to include("Malformed number line at 3: element size differs (7 should be 10)")
-        expect(subject).to include("Malformed number line at 3: element size differs (7 should be 10)")
-        expect(subject).to include("Malformed number line")
+        expect(output).to include("Malformed number line at 3: element size differs (7 should be 10)")
+        expect(output).to include("Malformed number line at 3: element size differs (7 should be 10)")
+        expect(output).to include("Malformed number line")
       end
     end
   end
