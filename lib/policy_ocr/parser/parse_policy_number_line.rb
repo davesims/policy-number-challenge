@@ -11,6 +11,10 @@ module PolicyOcr
         validate_size(:number_line, PolicyOcr::LINE_HEIGHT)
       end
 
+      on_validation_failed do
+        context.policy_number = PolicyOcr::Policy::Number::Invalid.new
+      end
+
       # Parses a PolicyOcr::LINE_HEIGHT-length array representing a single policy number.
       #
       # Example input:
