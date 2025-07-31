@@ -22,22 +22,11 @@ module PolicyOcr
 
     desc "generate_policy_numbers", "Generate test policy numbers in ASCII digital format"
     def generate_policy_numbers
-      valid = 20.times.map do |_i|
-        generate_valid_number
-      end
-
-      invalid_digits = 6.times.map do |_i|
-        generate_invalid_digits_number
-      end
-
-      invalid_checksums = 4.times.map do |_i|
-        generate_invalid_checksum_number
-      end
-
-      all_digits = valid + invalid_digits + invalid_checksums
-      all_digits.shuffle.each do |digit|
-        puts render_number(digit)
-      end
+      numbers = Array.new(20) { generate_valid_number } +
+                Array.new(6) { generate_invalid_digits_number } +
+                Array.new(4) { generate_invalid_checksum_number }
+      
+      puts numbers.shuffle.map { |number| render_number(number) }
     end
 
     private
@@ -102,8 +91,8 @@ module PolicyOcr
 
     def generate_invalid_digits_number
       digits = Array.new(9) { |_i| PolicyOcr::DigitalInt.from_int(rand(10)) }
-      # Replace random digits with Invalid patterns
-      wrong_patterns = ["|||", " | ", "___", " _ ", "|_|", "| |", "_|_", "__|", "|__", "_| "]
+      # Replace random digits with Invalid patterns (3x3 = 9 chars each)
+      wrong_patterns = ["|||   |||", " |    |  ", "___   ___", " _    _  ", "|_|   |_|", "| |   | |", "_|_   _|_", "__|   __|", "|__   |__", "_|    _| "]
       rand(1..3).times do
         digits[rand(9)] = PolicyOcr::DigitalInt::Invalid.new(pattern: wrong_patterns.sample)
       end
@@ -120,12 +109,7 @@ module PolicyOcr
     end
 
     def render_number(digits)
-      patterns = digits.map do |digit|
-        pattern = digit.pattern
-        pattern = pattern.ljust(12) if pattern.length < 12
-        pattern[0, 12] # Take only first 12 chars if longer
-      end
-
+      patterns = digits.map(&:pattern)
       lines = patterns.map { |p| p.scan(/.{3}/) }.transpose
       "#{lines.map(&:join).join("\n")}\n"
     end
