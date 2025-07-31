@@ -22,4 +22,11 @@ FactoryBot.define do
       ]
     end
   end
+
+  factory :failed_interactor_context, parent: :interactor_context do
+    after(:build) do |context|
+      context.instance_variable_set(:@failure, true)
+      context.error = "Interactor failed"
+    end
+  end
 end

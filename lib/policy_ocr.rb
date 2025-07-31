@@ -24,6 +24,20 @@ module PolicyOcr
     Thread.current[:policy_ocr_log_path] = path
   end
 
+  def self.setup_logging_for_file(input_file)
+    log_path = generate_log_file_path(input_file)
+    self.current_log_path = log_path
+    log_path
+  end
+
+  def self.generate_log_file_path(input_file)
+    log_dir = "log"
+    FileUtils.mkdir_p(log_dir)
+
+    base_name = File.basename(input_file, ".*")
+    File.join(log_dir, "#{base_name}_parsed.log")
+  end
+
   def self.logger_for(klass)
     Logger.new(current_log_path).tap do |log|
       log.level = Logger::DEBUG

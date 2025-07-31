@@ -9,7 +9,7 @@ module PolicyOcr
     include Interactor::Validations
 
     before do
-      validate_presence_of(:result, :input_file, :log_file)
+      validate_presence_of(:result, :input_file)
       validate_presence_of(:output_file) if success_case?
     end
 
@@ -20,8 +20,9 @@ module PolicyOcr
     #
     # For error cases, displays helpful error information and troubleshooting tips.
     #
-    # @param context [Interactor::Context] must contain result, input_file, log_file, and:
+    # @param context [Interactor::Context] must contain result, input_file, and:
     #   - output_file (for success cases)
+    # Log file path is retrieved from thread-local storage
     # @return [Interactor::Context] always succeeds (just displays output)
     def call
       display_header
@@ -66,7 +67,7 @@ module PolicyOcr
       puts
       puts "📄 Input File: #{context.input_file}"
       puts "📝 Output File: #{context.output_file}" if success_case?
-      puts "📋 Log File: #{context.log_file}"
+      puts "📋 Log File: #{PolicyOcr.current_log_path}"
       puts
     end
 

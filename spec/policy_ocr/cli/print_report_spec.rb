@@ -6,13 +6,16 @@ require_relative "../../../lib/policy_ocr/cli"
 RSpec.describe PolicyOcr::Cli::PrintReport do
   let(:policy_document) { instance_double(PolicyOcr::Policy::Document) }
   let(:success_result) { double(success?: true, policy_document:, parser_errors: []) }
-  let(:log_file) { "test.log" }
   let(:input_file) { "test.txt" }
   let(:result) { success_result }
   let(:output_file) { "parsed_files/sample_parsed.txt" }
 
+  before do
+    PolicyOcr.current_log_path = "test.log"
+  end
+
   describe "validations" do
-    subject(:print_report_result) { described_class.call({ result:, input_file:, output_file:, log_file: }) }
+    subject(:print_report_result) { described_class.call({ result:, input_file:, output_file: }) }
 
     context "without result" do
       let(:result) { nil }
@@ -32,15 +35,6 @@ RSpec.describe PolicyOcr::Cli::PrintReport do
       end
     end
 
-    context "without log_file" do
-      let(:log_file) { nil }
-
-      it "fails without log_file" do
-        expect(print_report_result.success?).to be false
-        expect(print_report_result.error).to include("log_file")
-      end
-    end
-
     context "when success case is missing output_file" do
       let(:output_file) { nil }
 
@@ -52,7 +46,7 @@ RSpec.describe PolicyOcr::Cli::PrintReport do
   end
 
   describe "success case output" do
-    subject(:output) { capture_stdout { described_class.call({ result:, input_file:, output_file:, log_file: }) } }
+    subject(:output) { capture_stdout { described_class.call({ result:, input_file:, output_file: }) } }
 
     before do
       allow(policy_document).to receive_messages(total_count: 10, valid_count: 7, err_count: 2, ill_count: 1)

@@ -38,9 +38,7 @@ Style/StringLiterals:
   Enabled: false
   
 RSpec/MultipleExpectations:
-  Max: 3
-  Exclude:
-    - 'spec/policy_ocr/cli_spec.rb'
+  Max: 8
 
 RSpec/ExampleLength:
   Max: 10

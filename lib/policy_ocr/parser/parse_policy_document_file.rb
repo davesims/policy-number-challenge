@@ -8,6 +8,7 @@ module PolicyOcr
 
       before do
         validate_presence_of(:file_path)
+        validate("File '#{context.file_path}' not found") { File.exist?(context.file_path) }
       end
 
       # Reads a policy document file and parses it into a PolicyOcr::Policy::Document.

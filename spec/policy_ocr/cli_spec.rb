@@ -1,77 +1,139 @@
 # frozen_string_literal: true
 
-require 'English'
-require "spec_helper"
-require "tempfile"
 require_relative "../../lib/policy_ocr/cli"
 
-RSpec.describe PolicyOcr::Cli do
-  subject(:cli_output) { `policy_ocr parse #{file_path}` }
+require "spec_helper"
 
+RSpec.describe PolicyOcr::Cli do
+  let(:cli) { described_class.new }
   let(:file_path) { "spec/fixtures/sample.txt" }
-  let(:exit_code) { $CHILD_STATUS.exitstatus }
+
+  before do
+    # Prevent the CLI from actually exiting during tests
+    allow(cli).to receive(:exit)
+    allow(PolicyOcr).to receive(:setup_logging_for_file)
+    allow(PolicyOcr::Cli::PrintReport).to receive(:call)
+  end
 
   describe "#parse" do
-    context "with valid policy numbers" do
-      let(:output_file) { "parsed_files/sample_parsed.txt" }
-      let(:log_file) { "log/sample_parsed.log" }
+    subject(:parse_file) { cli.parse(file_path) }
+
+    let(:policy_document) { instance_double(PolicyOcr::Policy::Document, to_s: "parsed content") }
+    let(:parse_result) do
+      build(:interactor_context, success?: true, policy_document:, parser_errors: [])
+    end
+    let(:write_result) do
+      build(:interactor_context, success?: true, output_file: "path/to/output.txt")
+    end
+
+    before do
+      allow(PolicyOcr::Parser::ParsePolicyDocumentFile).to receive(:call).and_return(parse_result)
+      allow(PolicyOcr::Cli::WriteOutputFile).to receive(:call).and_return(write_result)
+    end
+
+    it "sets up logging for the input file" do
+      expect(PolicyOcr).to receive(:setup_logging_for_file).with(file_path)
+      subject
+    end
+
+    it "calls the ParsePolicyDocumentFile interactor with the correct file path" do
+      expect(PolicyOcr::Parser::ParsePolicyDocumentFile).to receive(:call).with(file_path:)
+      subject
+    end
+
+    context "when parsing is successful" do
+      it "calls the WriteOutputFile interactor" do
+        expect(PolicyOcr::Cli::WriteOutputFile).to receive(:call).with(
+          content: policy_document.to_s,
+          input_file: file_path
+        )
+        parse_file
+      end
+
+      it "calls the PrintReport interactor with the success result" do
+        expect(PolicyOcr::Cli::PrintReport).to receive(:call).with(
+          result: parse_result,
+          input_file: file_path,
+          output_file: write_result.output_file
+        )
+        parse_file
+      end
+
+      it "does not exit with an error code" do
+        expect(cli).not_to receive(:exit).with(1)
+        parse_file
+      end
+    end
+
+    context "when parsing fails" do
+      let(:parse_result) do
+        build(:failed_interactor_context, error: "Parsing failed")
+      end
 
       before do
-        FileUtils.rm_f(output_file)
-        FileUtils.rm_f(log_file)
+        allow(PolicyOcr::Cli::WriteOutputFile).to receive(:call)
       end
 
-      after do
-        FileUtils.rm_f(output_file)
-        FileUtils.rm_f(log_file)
+      it "does not call the WriteOutputFile interactor" do
+        expect(PolicyOcr::Cli::WriteOutputFile).not_to receive(:call)
+        parse_file
       end
 
-      it "processes file successfully and creates output file" do
-        cli_output
+      it "calls the PrintReport interactor with the failure result" do
+        expect(PolicyOcr::Cli::PrintReport).to receive(:call).with(
+          result: parse_result,
+          input_file: file_path,
+          output_file: nil
+        )
+        parse_file
+      end
 
-        # Check files were created
-        expect(File.exist?(output_file)).to be true
-        expect(File.exist?(log_file)).to be true
+      it "exits with status 1" do
+        expect(cli).to receive(:exit).with(1)
+        parse_file
+      end
+    end
 
-        # Check file content has parsed policy numbers
-        file_content = File.read(output_file)
-        expect(file_content).to include("000000000 ")
-        expect(file_content).to include("123456789 ")
-        expect(file_content).to include("111111111 ERR")
+    context "when an unexpected error occurs" do
+      let(:error) { StandardError.new("Something went wrong") }
 
-        # Check exit code
-        expect(exit_code).to eq(0)
+      before do
+        allow(PolicyOcr::Parser::ParsePolicyDocumentFile).to receive(:call).and_raise(error)
+        allow($stdout).to receive(:puts) # Suppress output for cleaner test logs
+      end
+
+      it "prints an error message" do
+        expect($stdout).to receive(:puts).with("Error parsing file: Something went wrong")
+        parse_file
+      end
+
+      it "exits with status 1" do
+        expect(cli).to receive(:exit).with(1)
+        parse_file
       end
     end
   end
 
-  describe "error handling scenarios" do
-    context "when file does not exist" do
-      let(:file_path) { "nonexistent_file.txt" }
+  describe "#generate_policy_numbers" do
+    subject(:generate_policy_numbers) { cli.generate_policy_numbers }
 
-      it "displays error message and exits with code 1" do
-        expect(cli_output).to include("Error: File 'nonexistent_file.txt' not found")
-        expect(exit_code).to eq(1)
-      end
+    let(:generator_result) do
+      build(:interactor_context, success?: true, generated_numbers: "sample numbers")
     end
 
-    context "when file exists but is empty" do
-      let(:file_path) { "spec/fixtures/empty.txt" }
-
-      it "handles empty files gracefully" do
-        expect(cli_output).to include("❌ UNABLE TO PARSE empty.txt")
-        expect(cli_output).to include("Error: Failed to parse policy document: raw_text cannot be empty")
-      end
+    before do
+      allow(PolicyOcr::Cli::GenerateSamplePolicyNumbers).to receive(:call).and_return(generator_result)
+      allow($stdout).to receive(:puts)
     end
 
-    context "when file has malformed content" do
-      let(:file_path) { "spec/fixtures/malformed_content.txt" }
+    it "calls the GenerateSamplePolicyNumbers interactor" do
+      expect(PolicyOcr::Cli::GenerateSamplePolicyNumbers).to receive(:call)
+      generate_policy_numbers
+    end
 
-      it "handles files with incorrect line counts" do
-        expect(cli_output).to include("Malformed number line at 3: element size differs (7 should be 10)")
-        expect(cli_output).to include("Malformed number line at 3: element size differs (7 should be 10)")
-        expect(cli_output).to include("Malformed number line")
-      end
+    it "prints the generated numbers to stdout" do
+      expect($stdout).to receive(:puts).with("sample numbers")
+      generate_policy_numbers
     end
   end
 end

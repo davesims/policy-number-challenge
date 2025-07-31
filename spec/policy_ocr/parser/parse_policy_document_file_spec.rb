@@ -50,7 +50,7 @@ RSpec.describe PolicyOcr::Parser::ParsePolicyDocumentFile do
 
       it "fails with file not found error" do
         expect(result).to be_failure
-        expect(result.error).to eq("No such file or directory @ rb_sysopen - nonexistent.txt")
+        expect(result.error).to eq("File 'nonexistent.txt' not found")
       end
     end
   end
