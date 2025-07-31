@@ -119,27 +119,45 @@ RSpec.describe PolicyOcr::Policy::Document do
         expect(document.ill_count).to eq(1)
       end
     end
+  end
 
-    context "with empty policy numbers" do
-      let(:empty_document) { described_class.new([]) }
+  describe "statistics methods with empty document" do
+    let(:empty_document) { described_class.new([]) }
 
-      it "handles empty document gracefully" do
-        expect(empty_document.total_count).to eq(0)
-        expect(empty_document.valid_count).to eq(0)
-        expect(empty_document.err_count).to eq(0)
-        expect(empty_document.ill_count).to eq(0)
-      end
+    it "has zero total count" do
+      expect(empty_document.total_count).to eq(0)
     end
 
-    context "with all valid policy numbers" do
-      let(:all_valid_document) { described_class.new([valid_number, valid_number]) }
+    it "has zero valid count" do
+      expect(empty_document.valid_count).to eq(0)
+    end
 
-      it "returns correct counts for all valid" do
-        expect(all_valid_document.total_count).to eq(2)
-        expect(all_valid_document.valid_count).to eq(2)
-        expect(all_valid_document.err_count).to eq(0)
-        expect(all_valid_document.ill_count).to eq(0)
-      end
+    it "has zero error count" do
+      expect(empty_document.err_count).to eq(0)
+    end
+
+    it "has zero invalid count" do
+      expect(empty_document.ill_count).to eq(0)
+    end
+  end
+
+  describe "statistics methods with all valid numbers" do
+    let(:all_valid_document) { described_class.new([valid_number, valid_number]) }
+
+    it "has correct total count" do
+      expect(all_valid_document.total_count).to eq(2)
+    end
+
+    it "has correct valid count" do
+      expect(all_valid_document.valid_count).to eq(2)
+    end
+
+    it "has zero error count" do
+      expect(all_valid_document.err_count).to eq(0)
+    end
+
+    it "has zero invalid count" do
+      expect(all_valid_document.ill_count).to eq(0)
     end
   end
 end

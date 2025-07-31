@@ -44,11 +44,11 @@ module PolicyOcr
         all_digits_valid? && checksum_valid?
       end
 
-      def has_checksum_error?
+      def checksum_error?
         all_digits_valid? && !checksum_valid?
       end
 
-      def has_invalid_digits?
+      def invalid_digits?
         !all_digits_valid?
       end
 

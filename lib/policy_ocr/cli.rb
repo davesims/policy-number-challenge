@@ -26,8 +26,8 @@ module PolicyOcr
       numbers = Array.new(20) { generate_valid_number } +
                 Array.new(6) { generate_invalid_digits_number } +
                 Array.new(4) { generate_invalid_checksum_number }
-      
-      puts numbers.shuffle.map { |number| render_number(number) }
+
+      puts(numbers.shuffle.map { |number| render_number(number) })
     end
 
     private
@@ -44,21 +44,22 @@ module PolicyOcr
     end
 
     def handle_parse_result(result, input_file)
+      log_file = get_log_file_path(input_file)
+      output_file = nil
+
       if result.success?
         output = result.policy_document.to_s
         output_file = write_output_file(output, input_file)
-        log_file = get_log_file_path(input_file)
-        display_parsing_report(result, input_file, output_file, log_file)
-      else
-        log_file = get_log_file_path(input_file)
-        display_error_report(input_file, result.error, log_file)
-        exit 1
       end
-    end
 
-    def display_parser_errors(result)
-      puts "\nThe process encountered parser errors:"
-      result.parser_errors.each { |error| puts "  - #{error}" }
+      PolicyOcr::Cli::PrintReport.call(
+        result: result,
+        input_file: input_file,
+        output_file: output_file,
+        log_file: log_file
+      )
+
+      exit 1 unless result.success?
     end
 
     def handle_parsing_error(error)
@@ -66,90 +67,27 @@ module PolicyOcr
       exit 1
     end
 
-    def display_error_report(input_file, error_message, log_file)
-      filename = File.basename(input_file)
-      puts "\n" + "=" * 60
-      puts "❌ UNABLE TO PARSE #{filename}"
-      puts "=" * 60
-      puts
-      puts "📄 Input File: #{input_file}"
-      puts "📋 Log File: #{log_file}"
-      puts "❌ Error: #{error_message}"
-      puts
-      puts "💡 Please check that the file exists and contains valid policy number data."
-      puts "💡 Check the log file for detailed error information."
-      puts "=" * 60
-    end
-
     def setup_logging(input_file)
       log_file = get_log_file_path(input_file)
-      PolicyOcr.set_log_path(log_file)
+      PolicyOcr.current_log_path = log_file
     end
 
     def get_log_file_path(input_file)
       output_dir = "parsed_files"
-      Dir.mkdir(output_dir) unless Dir.exist?(output_dir)
-      
+      FileUtils.mkdir_p(output_dir)
+
       base_name = File.basename(input_file, ".*")
       File.join(output_dir, "parsed_#{base_name}.log")
     end
 
     def write_output_file(output, input_file)
       output_dir = "parsed_files"
-      Dir.mkdir(output_dir) unless Dir.exist?(output_dir)
-      
+      FileUtils.mkdir_p(output_dir)
+
       base_name = File.basename(input_file, ".*")
       output_filename = File.join(output_dir, "#{base_name}_parsed.txt")
       File.write(output_filename, output)
       output_filename
-    end
-
-    def display_parsing_report(result, input_file, output_file, log_file)
-      policy_numbers = result.policy_document.policy_numbers
-      total_count = policy_numbers.size
-      valid_count = policy_numbers.count { |pn| pn.message.empty? }
-      err_count = policy_numbers.count { |pn| pn.message == "ERR" }
-      ill_count = policy_numbers.count { |pn| pn.message == "ILL" }
-      
-      filename = File.basename(input_file)
-      has_parser_errors = result.parser_errors&.any?
-      
-      header = if has_parser_errors
-                 "⚠️  PARSED #{filename} WITH ERRORS"
-               else
-                 "✅ SUCCESSFULLY PARSED #{filename}"
-               end
-      
-      puts "\n" + "=" * 60
-      puts header
-      puts "=" * 60
-      puts
-      puts "📄 Input File: #{input_file}"
-      puts "📝 Output File: #{output_file}"
-      puts "📋 Log File: #{log_file}"
-      puts
-      puts "📈 PARSING STATISTICS:"
-      puts "  Total Lines Parsed: #{total_count}"
-      puts "  ✅ Valid Numbers: #{valid_count} (#{percentage(valid_count, total_count)}%)"
-      puts "  ❌ Checksum Errors (ERR): #{err_count} (#{percentage(err_count, total_count)}%)"
-      puts "  ❓ Invalid Digits (ILL): #{ill_count} (#{percentage(ill_count, total_count)}%)"
-      
-      if result.parser_errors&.any?
-        puts
-        puts "⚠️  PARSER ERRORS ENCOUNTERED:"
-        result.parser_errors.each_with_index do |error, index|
-          puts "  #{index + 1}. #{error}"
-        end
-      end
-      
-      puts
-      puts "✨ Parsing completed successfully!"
-      puts "=" * 60
-    end
-
-    def percentage(count, total)
-      return 0 if total.zero?
-      ((count.to_f / total) * 100).round(1)
     end
 
     def checksum_valid?(digital_ints)
@@ -182,7 +120,8 @@ module PolicyOcr
     def generate_invalid_digits_number
       digits = Array.new(9) { |_i| PolicyOcr::DigitalInt.from_int(rand(10)) }
       # Replace random digits with Invalid patterns (3x3 = 9 chars each)
-      wrong_patterns = ["|||   |||", " |    |  ", "___   ___", " _    _  ", "|_|   |_|", "| |   | |", "_|_   _|_", "__|   __|", "|__   |__", "_|    _| "]
+      wrong_patterns = ["|||   |||", " |    |  ", "___   ___", " _    _  ", "|_|   |_|", "| |   | |", "_|_   _|_",
+                        "__|   __|", "|__   |__", "_|    _| "]
       rand(1..3).times do
         digits[rand(9)] = PolicyOcr::DigitalInt::Invalid.new(pattern: wrong_patterns.sample)
       end
@@ -205,6 +144,9 @@ module PolicyOcr
     end
   end
 end
+
+# Load PrintReport after Cli class is defined
+require_relative "cli/print_report"
 
 # Run the CLI if this file is executed directly
 PolicyOcr::Cli.start(ARGV) if __FILE__ == $PROGRAM_NAME

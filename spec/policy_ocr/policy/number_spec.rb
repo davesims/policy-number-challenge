@@ -142,7 +142,7 @@ RSpec.describe PolicyOcr::Policy::Number do
 
     context "with invalid digits" do
       it "returns false" do
-        number = described_class.new(invalid_digital_ints) 
+        number = described_class.new(invalid_digital_ints)
         expect(number.valid?).to be false
       end
     end
@@ -155,48 +155,48 @@ RSpec.describe PolicyOcr::Policy::Number do
     end
   end
 
-  describe "#has_checksum_error?" do
+  describe "#checksum_error?" do
     context "with valid digits and valid checksum" do
       it "returns false" do
         number = described_class.new(valid_digital_ints)
-        expect(number.has_checksum_error?).to be false
+        expect(number.checksum_error?).to be false
       end
     end
 
     context "with invalid digits" do
       it "returns false" do
         number = described_class.new(invalid_digital_ints)
-        expect(number.has_checksum_error?).to be false
+        expect(number.checksum_error?).to be false
       end
     end
 
     context "with valid digits but invalid checksum" do
       it "returns true" do
         number = described_class.new(checksum_invalid_digital_ints)
-        expect(number.has_checksum_error?).to be true
+        expect(number.checksum_error?).to be true
       end
     end
   end
 
-  describe "#has_invalid_digits?" do
+  describe "#invalid_digits?" do
     context "with valid digits and valid checksum" do
       it "returns false" do
         number = described_class.new(valid_digital_ints)
-        expect(number.has_invalid_digits?).to be false
+        expect(number.invalid_digits?).to be false
       end
     end
 
     context "with invalid digits" do
       it "returns true" do
         number = described_class.new(invalid_digital_ints)
-        expect(number.has_invalid_digits?).to be true
+        expect(number.invalid_digits?).to be true
       end
     end
 
     context "with valid digits but invalid checksum" do
       it "returns false" do
         number = described_class.new(checksum_invalid_digital_ints)
-        expect(number.has_invalid_digits?).to be false
+        expect(number.invalid_digits?).to be false
       end
     end
   end

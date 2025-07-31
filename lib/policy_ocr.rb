@@ -14,12 +14,12 @@ module PolicyOcr
   CARRIAGE_RETURN = "\n"
   DIGITAL_INTS_DEFINITION_PATH = "./lib/policy_ocr/digital_int/digital_ints.yml"
   LOG_PATH = "policy_ocr.log"
-  
+
   def self.current_log_path
     @current_log_path || LOG_PATH
   end
-  
-  def self.set_log_path(path)
+
+  def self.current_log_path=(path)
     @current_log_path = path
   end
 

@@ -66,4 +66,8 @@ RSpec/IteratedExpectation:
 Style/DocumentDynamicEvalDefinition:
   Enabled: false
 
+# Allow up to 8 memoized helpers in specs for complex test setup
+RSpec/MultipleMemoizedHelpers:
+  Max: 8
+
 

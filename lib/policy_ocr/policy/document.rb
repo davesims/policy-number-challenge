@@ -23,11 +23,11 @@ module PolicyOcr
       end
 
       def err_count
-        policy_numbers.count(&:has_checksum_error?)
+        policy_numbers.count(&:checksum_error?)
       end
 
       def ill_count
-        policy_numbers.count(&:has_invalid_digits?)
+        policy_numbers.count(&:invalid_digits?)
       end
     end
   end
