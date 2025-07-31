@@ -42,6 +42,7 @@ module PolicyOcr
           .to_a
       end
 
+      # This allows us to record specific issues at the line level and continue processing
       def record_parser_errors(result)
         context.parser_errors ||= []
         context.parser_errors << result.error

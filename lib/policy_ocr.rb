@@ -31,7 +31,7 @@ end
 
 # Load root level files first
 require_relative "interactor/validations"
-require_relative "validate_policy_number_checksum"
+require_relative "policy_ocr/validate_policy_number_checksum"
 
 # Load base classes next
 require_relative "policy_ocr/digital_int/base"

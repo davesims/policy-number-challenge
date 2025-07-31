@@ -55,28 +55,10 @@ RSpec.describe PolicyOcr::Policy::Number do
   end
 
   describe "#checksum?" do
-    context "when checksum is valid" do
-      it "returns true" do
-        number = PolicyOcr::Policy::Number.new(valid_digital_ints)
-        
-        expect(number.checksum?).to be true
-      end
-    end
-
-    context "when checksum is invalid" do
-      it "returns false" do
-        number = PolicyOcr::Policy::Number.new(checksum_invalid_digital_ints)
-        
-        expect(number.checksum?).to be false
-      end
-    end
-
-    context "when digital ints contain invalid digits" do
-      it "returns false" do
-        number = PolicyOcr::Policy::Number.new(invalid_digital_ints)
-        
-        expect(number.checksum?).to be false
-      end
+    it "delegates to ValidatePolicyNumberChecksum" do
+      number = PolicyOcr::Policy::Number.new(valid_digital_ints)
+      expect(PolicyOcr::ValidatePolicyNumberChecksum).to receive(:call).with(policy_number: number).and_call_original
+      number.checksum?
     end
   end
 
