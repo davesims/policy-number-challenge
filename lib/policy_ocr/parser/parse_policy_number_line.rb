@@ -30,17 +30,13 @@ module PolicyOcr
       # @return [Interactor::Context] result with policy_number set
       def call
         logger.debug("Parsing policy number at line #{index}...")
-        context.policy_number = parse_policy_number
+        context.policy_number = PolicyOcr::Policy::Number.new(digital_ints)
         logger.debug("Parsed policy number #{context.policy_number} at line #{index}...")
       rescue StandardError => e
         handle_parsing_error(e)
       end
 
       private
-
-      def parse_policy_number
-        PolicyOcr::Policy::Number.new(digital_ints)
-      end
 
       def handle_parsing_error(error)
         logger.error("Failed to parse policy number at line #{index}: #{error.message}")
