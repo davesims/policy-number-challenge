@@ -17,17 +17,53 @@ Layout/LineLength:
   Max: 120
 
 Metrics/MethodLength:
-  Max: 15
+  Max: 20
 
 Metrics/ClassLength:
   Max: 100
 
 Metrics/AbcSize:
-  Max: 20
+  Max: 25
+
+Metrics/CyclomaticComplexity:
+  Max: 10
+
+Metrics/PerceivedComplexity:
+  Max: 10
 
 Style/FrozenStringLiteralComment:
   Enabled: true
 
 Style/StringLiterals:
   Enabled: false
+  
+RSpec/MultipleExpectations:
+  Max: 3
+  Exclude:
+    - 'spec/policy_ocr/cli_spec.rb'
+
+RSpec/ExampleLength:
+  Max: 10
+  
+RSpec/NestedGroups:
+  Max: 4
+
+# Allow global variables in test files for hook testing
+Style/GlobalVars:
+  Exclude:
+    - 'spec/**/*'
+
+# Allow receive expectations in tests but prefer spies for new code
+RSpec/MessageSpies:
+  EnforcedStyle: receive
+
+# Allow iterated expectations in CLI integration tests
+RSpec/IteratedExpectation:
+  Exclude:
+    - 'spec/policy_ocr/cli_spec.rb'
+
+# Disable dynamic eval documentation (metaprogramming file is documented)
+Style/DocumentDynamicEvalDefinition:
+  Enabled: false
+
 

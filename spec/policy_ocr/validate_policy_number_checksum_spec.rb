@@ -51,7 +51,7 @@ RSpec.describe PolicyOcr::ValidatePolicyNumberChecksum do
     end
 
     context "with missing policy_number" do
-      subject { described_class.call({}) }
+      subject(:result) { described_class.call({}) }
 
       it "returns failure due to validation" do
         expect(result).to be_failure
@@ -60,7 +60,7 @@ RSpec.describe PolicyOcr::ValidatePolicyNumberChecksum do
     end
 
     context "with nil policy_number" do
-      subject { described_class.call(policy_number: nil) }
+      subject(:result) { described_class.call(policy_number: nil) }
 
       it "returns failure due to validation" do
         expect(result).to be_failure

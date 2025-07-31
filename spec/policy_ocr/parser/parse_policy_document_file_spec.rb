@@ -9,8 +9,11 @@ RSpec.describe PolicyOcr::Parser::ParsePolicyDocumentFile do
     let(:context) { build(:policy_ocr_context) }
 
     context "with valid inputs" do
-      it "successfully processes file into policy document" do
+      it "returns success" do
         expect(result).to be_success
+      end
+
+      it "creates policy document" do
         expect(result.policy_document).to be_a(PolicyOcr::Policy::Document)
       end
 
@@ -24,32 +27,30 @@ RSpec.describe PolicyOcr::Parser::ParsePolicyDocumentFile do
       end
     end
 
-    context "with invalid inputs" do
-      context "when file_path is nil" do
-        let(:context) { build(:policy_ocr_context, file_path: nil) }
+    context "when file_path is nil" do
+      let(:context) { build(:policy_ocr_context, file_path: nil) }
 
-        it "fails" do
-          expect(result).to be_failure
-          expect(result.error).to eq("file_path is required")
-        end
+      it "fails with validation error" do
+        expect(result).to be_failure
+        expect(result.error).to eq("file_path is required")
       end
+    end
 
-      context "when file_path is empty" do
-        let(:context) { build(:policy_ocr_context, file_path: "") }
+    context "when file_path is empty" do
+      let(:context) { build(:policy_ocr_context, file_path: "") }
 
-        it "fails" do
-          expect(result).to be_failure
-          expect(result.error).to eq("file_path cannot be empty")
-        end
+      it "fails with validation error" do
+        expect(result).to be_failure
+        expect(result.error).to eq("file_path cannot be empty")
       end
+    end
 
-      context "when file does not exist" do
-        let(:context) { build(:policy_ocr_context, file_path: "nonexistent.txt") }
+    context "when file does not exist" do
+      let(:context) { build(:policy_ocr_context, file_path: "nonexistent.txt") }
 
-        it "fails" do
-          expect(result).to be_failure
-          expect(result.error).to eq("No such file or directory @ rb_sysopen - nonexistent.txt")
-        end
+      it "fails with file not found error" do
+        expect(result).to be_failure
+        expect(result.error).to eq("No such file or directory @ rb_sysopen - nonexistent.txt")
       end
     end
   end

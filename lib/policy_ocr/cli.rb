@@ -12,31 +12,12 @@ module PolicyOcr
 
     desc "parse FILE", "Parse policy numbers from an OCR text file"
     def parse(file)
-      unless File.exist?(file)
-        puts "Error: File '#{file}' not found"
-        exit 1
-      end
+      validate_file_exists(file)
 
-      begin
-        result = PolicyOcr::Parser::ParsePolicyDocumentFile.call(file_path: file)
-
-        if result.success?
-          puts result.policy_document
-        else
-          puts "Error: #{result.error}"
-          exit 1
-        end
-
-        if result.parser_errors&.any?
-          puts "\nThe process encountered parser errors:"
-          result.parser_errors.each do |error|
-            puts "  - #{error}"
-          end
-        end
-      rescue StandardError => e
-        puts "Error parsing file: #{e.message}"
-        exit 1
-      end
+      result = parse_policy_file(file)
+      handle_parse_result(result)
+    rescue StandardError => e
+      handle_parsing_error(e)
     end
 
     desc "generate_policy_numbers", "Generate test policy numbers in ASCII digital format"
@@ -60,6 +41,37 @@ module PolicyOcr
     end
 
     private
+
+    def validate_file_exists(file)
+      return if File.exist?(file)
+
+      puts "Error: File '#{file}' not found"
+      exit 1
+    end
+
+    def parse_policy_file(file)
+      PolicyOcr::Parser::ParsePolicyDocumentFile.call(file_path: file)
+    end
+
+    def handle_parse_result(result)
+      if result.success?
+        puts result.policy_document
+        display_parser_errors(result) if result.parser_errors&.any?
+      else
+        puts "Error: #{result.error}"
+        exit 1
+      end
+    end
+
+    def display_parser_errors(result)
+      puts "\nThe process encountered parser errors:"
+      result.parser_errors.each { |error| puts "  - #{error}" }
+    end
+
+    def handle_parsing_error(error)
+      puts "Error parsing file: #{error.message}"
+      exit 1
+    end
 
     def checksum_valid?(digital_ints)
       policy_number = PolicyOcr::Policy::Number.new(digital_ints)

@@ -3,8 +3,9 @@
 require 'English'
 require "spec_helper"
 require "tempfile"
+require_relative "../../lib/policy_ocr/cli"
 
-RSpec.describe "PolicyOcr::Cli Integration - parse command" do
+RSpec.describe PolicyOcr::Cli do
   subject(:output) { `policy_ocr parse #{file_path}` }
 
   let(:file_path) { "spec/fixtures/sample.txt" }

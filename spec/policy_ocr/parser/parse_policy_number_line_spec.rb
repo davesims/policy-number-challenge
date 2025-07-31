@@ -52,7 +52,7 @@ RSpec.describe PolicyOcr::Parser::ParsePolicyNumberLine do
         end
       end
 
-      context "fails when number_line has wrong size (too many lines)" do
+      context "when number_line has too many lines" do
         let(:context) do
           build(:policy_number_line_context, number_line: %w[line1 line2 line3 line4 line5], index:)
         end

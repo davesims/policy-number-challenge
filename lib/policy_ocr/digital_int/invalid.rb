@@ -8,7 +8,7 @@ module PolicyOcr
     class Invalid < Base
       attr_reader :pattern
 
-      def initialize(pattern:)
+      def initialize(pattern:) # rubocop:disable Lint/MissingSuper
         @pattern = pattern
         @int_value = nil
       end

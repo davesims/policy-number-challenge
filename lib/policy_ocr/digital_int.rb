@@ -61,7 +61,7 @@ module PolicyOcr
       klass = all_numbers.find { |k| k.pattern == pattern }
 
       if klass.nil?
-        PolicyOcr.logger_for(self).warn "Invalid pattern: #{pattern}. Returning Invalid instance."
+        logger.warn "Invalid pattern: #{pattern}. Returning Invalid instance."
         return PolicyOcr::DigitalInt::Invalid.new(pattern:)
       end
 
@@ -70,12 +70,16 @@ module PolicyOcr
 
     def self.from_int(int)
       unless int.between?(0, 9)
-        PolicyOcr.logger_for(self).error "Invalid int value given: #{int}."
+        logger.error "Invalid int value given: #{int}."
         return PolicyOcr::DigitalInt::Invalid.new(pattern: "?")
       end
 
       klass = all_numbers.find { |k| k.new.to_i == int }
       klass.new
+    end
+
+    def self.logger
+      PolicyOcr.logger_for(self)
     end
 
     # Load all digital int classes whenever this module is evaluated.

@@ -29,16 +29,24 @@ module PolicyOcr
       # @param context [Interactor::Context] must contain number_line and index
       # @return [Interactor::Context] result with policy_number set
       def call
-        PolicyOcr.logger_for(self).debug("Parsing policy number at line #{index}...")
-        context.policy_number = PolicyOcr::Policy::Number.new(digital_ints)
-        PolicyOcr.logger_for(self).debug("Parsed policy number #{context.policy_number} at line #{index}...")
+        logger.debug("Parsing policy number at line #{index}...")
+        context.policy_number = parse_policy_number
+        logger.debug("Parsed policy number #{context.policy_number} at line #{index}...")
       rescue StandardError => e
-        PolicyOcr.logger_for(self).error("Failed to parse policy number at line #{index}: #{e.message}")
-        context.policy_number = PolicyOcr::Policy::Number::Invalid.new
-        context.fail!(error: "Malformed number line at #{index}: #{e.message} #{e.backtrace.first}")
+        handle_parsing_error(e)
       end
 
       private
+
+      def parse_policy_number
+        PolicyOcr::Policy::Number.new(digital_ints)
+      end
+
+      def handle_parsing_error(error)
+        logger.error("Failed to parse policy number at line #{index}: #{error.message}")
+        context.policy_number = PolicyOcr::Policy::Number::Invalid.new
+        context.fail!(error: "Malformed number line at #{index}: #{error.message} #{error.backtrace.first}")
+      end
 
       # digital_ints creates an array of DigitalInt objects from the matching digit patterns.
       def digital_ints
@@ -63,6 +71,10 @@ module PolicyOcr
 
       def index
         context.index
+      end
+
+      def logger
+        PolicyOcr.logger_for(self)
       end
     end
   end
