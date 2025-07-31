@@ -26,10 +26,10 @@ module PolicyOcr
       context.output_file = output_filename
     end
 
-    private 
+    private
 
     def create_output_dir
-      FileUtils.mkdir_p(output_dir) unless Dir.exist?(output_dir)
+      FileUtils.mkdir_p(output_dir)
     end
 
     def base_name

@@ -40,6 +40,7 @@ RSpec.describe Interactor::Validations do
 
     context "when value is nil" do
       subject(:result) { test_class.call(test_key: nil) }
+
       it "calls on_validation_failed hook before failing" do
         expect(result).to be_failure
         expect($hook_called).to be true
@@ -49,6 +50,7 @@ RSpec.describe Interactor::Validations do
 
     context "when value is empty" do
       subject(:result) { test_class.call(test_key: "") }
+
       it "calls on_validation_failed hook before failing" do
         expect(result).to be_failure
         expect($hook_called).to be true
@@ -58,6 +60,7 @@ RSpec.describe Interactor::Validations do
 
     context "when value is blank" do
       subject(:result) { test_class.call(test_key: "   ") }
+
       it "calls on_validation_failed hook before failing" do
         expect(result).to be_failure
         expect($hook_called).to be true
@@ -77,6 +80,7 @@ RSpec.describe Interactor::Validations do
 
     context "when validation passes" do
       subject(:result) { test_class.call(test_array: [1, 2, 3]) }
+
       it "does not call on_validation_failed hook" do
         expect(result).to be_success
         expect($hook_called).to be false
@@ -85,6 +89,7 @@ RSpec.describe Interactor::Validations do
 
     context "when size is incorrect" do
       subject(:result) { test_class.call(test_array: [1, 2]) }
+
       it "calls on_validation_failed hook before failing" do
         expect(result).to be_failure
         expect($hook_called).to be true
@@ -129,6 +134,8 @@ RSpec.describe Interactor::Validations do
   end
 
   describe "without on_validation_failed hook" do
+    subject(:result) { test_class_without_hook.call(test_key: nil) }
+
     let(:test_class_without_hook) do
       Class.new do
         include Interactor
@@ -143,8 +150,6 @@ RSpec.describe Interactor::Validations do
         end
       end
     end
-
-    subject(:result) { test_class_without_hook.call(test_key: nil) }
 
     it "works normally without the hook" do
       expect(result).to be_failure

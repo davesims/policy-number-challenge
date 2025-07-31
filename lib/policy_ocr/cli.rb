@@ -42,7 +42,7 @@ module PolicyOcr
       if result.success?
         write_result = PolicyOcr::Cli::WriteOutputFile.call(
           content: result.policy_document.to_s,
-          input_file: 
+          input_file:
         )
         output_file = write_result.output_file if write_result.success?
       end
