@@ -5,7 +5,7 @@ require_relative "../../../lib/policy_ocr/cli"
 
 RSpec.describe PolicyOcr::Cli::PrintReport do
   let(:policy_document) { instance_double(PolicyOcr::Policy::Document) }
-  let(:success_result) { instance_double(Interactor::Context, success?: true, policy_document:, parser_errors: []) }
+  let(:success_result) { double(success?: true, policy_document:, parser_errors: []) }
   let(:log_file) { "test.log" }
   let(:input_file) { "test.txt" }
   let(:result) { success_result }
@@ -103,7 +103,7 @@ RSpec.describe PolicyOcr::Cli::PrintReport do
     end
 
     context "with parser errors" do
-      let(:result) { instance_double(Interactor::Context, success?: true, policy_document:, parser_errors: ["Error 1", "Error 2"]) }
+      let(:result) { double(success?: true, policy_document:, parser_errors: ["Error 1", "Error 2"]) }
 
       it "displays warning header" do
         expect(output).to include(/⚠️  PARSED test.txt WITH ERRORS/)
@@ -125,7 +125,7 @@ RSpec.describe PolicyOcr::Cli::PrintReport do
     end
 
     describe "error case output" do
-      let(:result) { instance_double(Interactor::Context, success?: false, error: "Failed to parse policy document: raw_text cannot be empty") }
+      let(:result) { double(success?: false, error: "Failed to parse policy document: raw_text cannot be empty") }
 
       it "displays error header" do
         expect(output).to include(/❌ UNABLE TO PARSE test.txt/)

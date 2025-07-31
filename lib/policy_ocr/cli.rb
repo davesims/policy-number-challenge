@@ -15,7 +15,7 @@ module PolicyOcr
       validate_file_exists(file)
       setup_logging(file)
 
-      result = parse_policy_file(file)
+      result = PolicyOcr::Parser::ParsePolicyDocumentFile.call(file_path: file)
       handle_parse_result(result, file)
     rescue StandardError => e
       handle_parsing_error(e)
@@ -23,11 +23,8 @@ module PolicyOcr
 
     desc "generate_policy_numbers", "Generate test policy numbers in ASCII digital format"
     def generate_policy_numbers
-      numbers = Array.new(20) { generate_valid_number } +
-                Array.new(6) { generate_invalid_digits_number } +
-                Array.new(4) { generate_invalid_checksum_number }
-
-      puts(numbers.shuffle.map { |number| render_number(number) })
+      result = PolicyOcr::Cli::GenerateSamplePolicyNumbers.call
+      puts result.generated_numbers
     end
 
     private
@@ -39,24 +36,22 @@ module PolicyOcr
       exit 1
     end
 
-    def parse_policy_file(file)
-      PolicyOcr::Parser::ParsePolicyDocumentFile.call(file_path: file)
-    end
-
     def handle_parse_result(result, input_file)
-      log_file = get_log_file_path(input_file)
       output_file = nil
 
       if result.success?
-        output = result.policy_document.to_s
-        output_file = write_output_file(output, input_file)
+        write_result = PolicyOcr::Cli::WriteOutputFile.call(
+          content: result.policy_document.to_s,
+          input_file: input_file
+        )
+        output_file = write_result.output_file if write_result.success?
       end
 
       PolicyOcr::Cli::PrintReport.call(
         result: result,
         input_file: input_file,
         output_file: output_file,
-        log_file: log_file
+        log_file: log_file(input_file)
       )
 
       exit 1 unless result.success?
@@ -68,85 +63,26 @@ module PolicyOcr
     end
 
     def setup_logging(input_file)
-      log_file = get_log_file_path(input_file)
-      PolicyOcr.current_log_path = log_file
+      PolicyOcr.current_log_path = log_file(input_file)
     end
 
-    def get_log_file_path(input_file)
-      output_dir = "parsed_files"
-      FileUtils.mkdir_p(output_dir)
+    def log_file(input_file)
+      @log_files ||= {}
+      @log_files[input_file] ||= begin
+        output_dir = "parsed_files"
+        FileUtils.mkdir_p(output_dir)
 
-      base_name = File.basename(input_file, ".*")
-      File.join(output_dir, "parsed_#{base_name}.log")
-    end
-
-    def write_output_file(output, input_file)
-      output_dir = "parsed_files"
-      FileUtils.mkdir_p(output_dir)
-
-      base_name = File.basename(input_file, ".*")
-      output_filename = File.join(output_dir, "#{base_name}_parsed.txt")
-      File.write(output_filename, output)
-      output_filename
-    end
-
-    def checksum_valid?(digital_ints)
-      policy_number = PolicyOcr::Policy::Number.new(digital_ints)
-      policy_number.checksum_valid?
-    end
-
-    def generate_valid_number
-      loop do
-        # Generate first 8 digits randomly
-        base = Array.new(8) { rand(10) }
-
-        # Calculate partial sum: d1×1 + d2×2 + ... + d8×8
-        partial_sum = base.each_with_index.sum { |digit, i| digit * (i + 1) }
-
-        # Find d9 such that (partial_sum + d9×9) mod 11 = 0
-        target_remainder = (-partial_sum) % 11
-
-        (0..9).each do |candidate|
-          next unless (candidate * 9) % 11 == target_remainder
-
-          result = base + [candidate]
-          # Verify it's actually valid
-          digital_ints = result.map { |d| PolicyOcr::DigitalInt.from_int(d) }
-          return digital_ints if checksum_valid?(digital_ints)
-        end
+        base_name = File.basename(input_file, ".*")
+        File.join(output_dir, "parsed_#{base_name}.log")
       end
-    end
-
-    def generate_invalid_digits_number
-      digits = Array.new(9) { |_i| PolicyOcr::DigitalInt.from_int(rand(10)) }
-      # Replace random digits with Invalid patterns (3x3 = 9 chars each)
-      wrong_patterns = ["|||   |||", " |    |  ", "___   ___", " _    _  ", "|_|   |_|", "| |   | |", "_|_   _|_",
-                        "__|   __|", "|__   |__", "_|    _| "]
-      rand(1..3).times do
-        digits[rand(9)] = PolicyOcr::DigitalInt::Invalid.new(pattern: wrong_patterns.sample)
-      end
-      digits
-    end
-
-    def generate_invalid_checksum_number
-      valid_digits = generate_valid_number
-      # Change the last digit to make checksum invalid
-      last_digit_value = valid_digits[-1].to_i
-      invalid_digit_value = (last_digit_value + rand(1..5)) % 10
-      valid_digits[-1] = PolicyOcr::DigitalInt.from_int(invalid_digit_value)
-      valid_digits
-    end
-
-    def render_number(digits)
-      patterns = digits.map(&:pattern)
-      lines = patterns.map { |p| p.scan(/.{3}/) }.transpose
-      "#{lines.map(&:join).join("\n")}\n"
     end
   end
 end
 
-# Load PrintReport after Cli class is defined
+# Load CLI interactors after Cli class is defined
 require_relative "cli/print_report"
+require_relative "cli/generate_sample_policy_numbers"
+require_relative "cli/write_output_file"
 
 # Run the CLI if this file is executed directly
 PolicyOcr::Cli.start(ARGV) if __FILE__ == $PROGRAM_NAME

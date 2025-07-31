@@ -70,4 +70,8 @@ Style/DocumentDynamicEvalDefinition:
 RSpec/MultipleMemoizedHelpers:
   Max: 8
 
+# Allow regular doubles when instance_double doesn't support dynamic methods
+RSpec/VerifiedDoubles:
+  Enabled: false
+
 

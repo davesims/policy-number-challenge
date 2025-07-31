@@ -16,11 +16,11 @@ module PolicyOcr
   LOG_PATH = "policy_ocr.log"
 
   def self.current_log_path
-    @current_log_path || LOG_PATH
+    Thread.current[:policy_ocr_log_path] || LOG_PATH
   end
 
   def self.current_log_path=(path)
-    @current_log_path = path
+    Thread.current[:policy_ocr_log_path] = path
   end
 
   def self.logger_for(klass)
