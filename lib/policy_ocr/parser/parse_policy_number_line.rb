@@ -52,7 +52,7 @@ module PolicyOcr
       end
 
       # digital_patterns extracts the digit patterns representing one policy number from the number_line.
-      # These can be used to create DigitalInt objects.
+      # These patterns are used to create DigitalInt objects.
       def digital_patterns
         number_line
           .map(&:chars) # convert each string to chars

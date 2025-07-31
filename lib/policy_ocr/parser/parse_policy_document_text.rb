@@ -10,7 +10,7 @@ module PolicyOcr
         validate_presence_of(:raw_text)
       end
 
-      # Parses raw text of a policy document into policy numbers.
+      # Parses raw text of a policy document into an array of PolicyNumber objects.
       #
       # Takes raw text and splits it on carriage returns, slicing the lines into
       # groups of LINE_HEIGHT (3 lines) to represent each policy number, then sends

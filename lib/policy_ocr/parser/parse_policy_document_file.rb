@@ -17,11 +17,10 @@ module PolicyOcr
       # @return [Interactor::Context] result with policy_document set on success, or error message on failure
       def call
         logger.info("Reading policy document file: #{file_path}")
-        result = parse_document_text
-        handle_parse_result(result)
-        context.parser_errors = result.parser_errors
+        handle_parse_result(parse_document_text)
       rescue Errno::ENOENT => e
-        handle_file_not_found_error(e)
+        logger.error("File not found: #{file_path} - #{e.message}")
+        context.fail!(error: e.message)
       end
 
       private
@@ -38,11 +37,7 @@ module PolicyOcr
           logger.error("Failed to parse policy document: #{result.error}")
           context.fail!(error: "Failed to parse policy document: #{result.error}")
         end
-      end
-
-      def handle_file_not_found_error(error)
-        logger.error("File not found: #{file_path} - #{error.message}")
-        context.fail!(error: error.message)
+        context.parser_errors = result.parser_errors
       end
 
       def raw_text
