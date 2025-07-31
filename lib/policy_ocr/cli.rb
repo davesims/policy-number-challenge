@@ -114,9 +114,9 @@ module PolicyOcr
       valid_digits = generate_valid_number
       # Change the last digit to make checksum invalid
       last_digit_value = valid_digits[-1].to_i
-      new_digit_value = (last_digit_value + rand(1..5)) % 10
-      invalid_digits[-1] = PolicyOcr::DigitalInt.from_int(new_digit_value)
-      invalid_digits
+      invalid_digit_value = (last_digit_value + rand(1..5)) % 10
+      valid_digits[-1] = PolicyOcr::DigitalInt.from_int(invalid_digit_value)
+      valid_digits
     end
 
     def render_number(digits)
