@@ -14,7 +14,7 @@ RSpec.describe PolicyOcr::Cli do
   describe "#parse" do
     context "with valid policy numbers" do
       let(:output_file) { "parsed_files/sample_parsed.txt" }
-      let(:log_file) { "parsed_files/parsed_sample.log" }
+      let(:log_file) { "log/sample_parsed.log" }
 
       before do
         FileUtils.rm_f(output_file)

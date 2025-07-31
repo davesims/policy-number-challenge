@@ -64,11 +64,11 @@ module PolicyOcr
     def log_file(input_file)
       @log_files ||= {}
       @log_files[input_file] ||= begin
-        output_dir = "parsed_files"
-        FileUtils.mkdir_p(output_dir)
+        log_dir = "log"
+        FileUtils.mkdir_p(log_dir)
 
         base_name = File.basename(input_file, ".*")
-        File.join(output_dir, "parsed_#{base_name}.log")
+        File.join(log_dir, "#{base_name}_parsed.log")
       end
     end
   end

@@ -1,5 +1,6 @@
 # Log files
 *.log
+log/
 
 # Generated output files
 parsed_files/
