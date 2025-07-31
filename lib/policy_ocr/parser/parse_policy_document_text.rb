@@ -48,7 +48,9 @@ module PolicyOcr
         context.parser_errors << result.error
       end
 
-      def raw_text = context.raw_text
+      def raw_text
+        context.raw_text
+      end
     end
   end
 end

@@ -57,8 +57,13 @@ module PolicyOcr
           .map(&:join) # join each group of characters back into a string, which will be the digit pattern
       end
 
-      def number_line = context.number_line
-      def index = context.index
+      def number_line
+        context.number_line
+      end
+
+      def index
+        context.index
+      end
     end
   end
 end

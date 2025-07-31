@@ -12,9 +12,6 @@ module PolicyOcr::DigitalInt
       @int_value = nil
     end
 
-    def pattern
-      @pattern
-    end
 
     def valid?
       false

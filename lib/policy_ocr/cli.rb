@@ -34,7 +34,7 @@ module PolicyOcr
           end
         end
 
-      rescue => e
+      rescue StandardError => e
         puts "Error parsing file: #{e.message}"
         exit 1
       end

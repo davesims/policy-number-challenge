@@ -34,8 +34,13 @@ module PolicyOcr
 
       private
 
-      def raw_text = File.read(context.file_path)
-      def file_path = context.file_path
+      def raw_text
+        File.read(context.file_path)
+      end
+
+      def file_path
+        context.file_path
+      end
     end
   end
 end

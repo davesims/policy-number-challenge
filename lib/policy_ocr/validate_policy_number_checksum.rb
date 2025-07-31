@@ -32,7 +32,12 @@ module PolicyOcr
 
     private
 
-    def policy_number_digits = context.policy_number.to_a.reverse
-    def sequence = (1..policy_number_digits.size).to_a
+    def policy_number_digits
+      context.policy_number.to_a.reverse
+    end
+
+    def sequence
+      (1..policy_number_digits.size).to_a
+    end
   end
 end

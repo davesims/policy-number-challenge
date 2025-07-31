@@ -50,7 +50,7 @@ module PolicyOcr
     end
 
     def self.digital_int_definitions
-      @digital_int_definitions ||= YAML.load(File.read(PolicyOcr::DIGITAL_INTS_DEFINITION_PATH))
+      @digital_int_definitions ||= YAML.safe_load(File.read(PolicyOcr::DIGITAL_INTS_DEFINITION_PATH))
     end
 
     def self.all_numbers
