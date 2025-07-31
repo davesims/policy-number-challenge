@@ -77,6 +77,7 @@ Some benefits of this approach include:
 
 This is the general sequence of parsing, starting with the ParsePolicyDocumentFile, which reads the file contents and passes the raw text to the ParsePolicyDocumentText interactor.
 
+```
 ┌─────────────────────────┐     ┌─────────────────────────┐     ┌───────────────────────┐    ┌─────────────────────┐
 │                         │     │                         │     │                       │    │                     │
 │                         │     │                         │     │                       │    │                     │
@@ -109,6 +110,8 @@ This is the general sequence of parsing, starting with the ParsePolicyDocumentFi
              │                               │                              │                           │           
              │                               │                              │                           │           
              │                               │                              │                           │           
+
+```
 
 ### Design Patterns
 
