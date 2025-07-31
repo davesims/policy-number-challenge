@@ -17,7 +17,7 @@ module PolicyOcr
 
       if result.failure?
         PolicyOcr::Cli::PrintReport.call(result:, input_file: file_path, output_file: nil)
-        return exit 1
+        Kernel.exit 1
       end
 
       write_result = PolicyOcr::Cli::WriteOutputFile.call(
@@ -29,7 +29,7 @@ module PolicyOcr
       PolicyOcr::Cli::PrintReport.call(result:, input_file: file_path, output_file:)
     rescue StandardError => e
       puts "Error parsing file: #{e.message}"
-      exit 1
+      Kernel.exit 1
     end
 
     desc "generate_policy_numbers", "Generate test policy numbers in ASCII digital format"

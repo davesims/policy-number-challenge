@@ -33,12 +33,12 @@ RSpec.describe PolicyOcr::Cli do
 
     it "sets up logging for the input file" do
       expect(PolicyOcr).to receive(:setup_logging_for_file).with(file_path)
-      subject
+      parse_file
     end
 
     it "calls the ParsePolicyDocumentFile interactor with the correct file path" do
       expect(PolicyOcr::Parser::ParsePolicyDocumentFile).to receive(:call).with(file_path:)
-      subject
+      parse_file
     end
 
     context "when parsing is successful" do
