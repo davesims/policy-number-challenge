@@ -8,27 +8,191 @@ PolicyOCR is a Ruby application that parses policy numbers from ASCII digital fo
 
 ### Prerequisites
 
-- Ruby 3.x
-- Bundler
+- **Ruby 3.0 or higher** (tested with Ruby 3.4.4)
+- **Bundler** (gem install bundler if not installed)
+- **Git** (for cloning the repository)
 
 ### Installation
 
-```bash
-bundle install
-```
+1. **Clone the repository** (if you haven't already):
+   ```bash
+   git clone <repository-url>
+   cd policy-number-challenge
+   ```
+
+2. **Install dependencies**:
+   ```bash
+   bundle install
+   ```
+
+3. **Verify installation**:
+   ```bash
+   ./policy_ocr --help
+   # OR using bundle exec:
+   bundle exec ./policy_ocr --help
+   ```
+
+   You should see the Thor help output showing available commands.
+
+4. **Make the CLI executable** (optional, for easier access):
+   ```bash
+   chmod +x policy_ocr
+   # Add to your PATH or create an alias if desired
+   ```
+
+### Quick Start
+
+Try the application with the included sample files:
+
+1. **Parse a sample file with valid policy numbers**:
+   ```bash
+   ./policy_ocr parse spec/fixtures/sample.txt
+   ```
+
+2. **Try a file with mixed results (valid, invalid digits, checksum errors)**:
+   ```bash
+   ./policy_ocr parse spec/fixtures/mixed_policy_numbers.txt
+   ```
+
+3. **Generate your own test data**:
+   ```bash
+   ./policy_ocr generate_policy_numbers > my_test_data.txt
+   ./policy_ocr parse my_test_data.txt
+   ```
+
+4. **Check the results**:
+   - View the parsed output: `ls parsed_files/`
+   - Check the detailed logs: `ls log/`
 
 ### Usage
 
-Parse policy numbers from a text file:
+The PolicyOCR command-line interface provides two main commands:
+
+#### Parsing Policy Documents
+
+Parse policy numbers from an OCR text file:
 
 ```bash
-policy_ocr parse path/to/policy_file.txt
+# Direct execution (if executable)
+./policy_ocr parse spec/fixtures/sample.txt
+
+# OR using bundle exec
+bundle exec ./policy_ocr parse spec/fixtures/sample.txt
+
+# Try other sample files:
+./policy_ocr parse spec/fixtures/mixed_policy_numbers.txt
+./policy_ocr parse spec/fixtures/checksum_errors.txt
+./policy_ocr parse spec/fixtures/invalid_digits.txt
 ```
 
-Generate test policy numbers:
+This command will:
+- Parse the ASCII digital format policy numbers from the input file
+- Validate checksums and identify invalid digits
+- Generate a parsed output file in the `parsed_files/` directory
+- Create a detailed log file in the `log/` directory
+- Display a summary report with statistics
+
+### Example Output
+
+**Parsing a file with mixed results** (`spec/fixtures/mixed_policy_numbers.txt`):
+
+```
+============================================================
+✅ SUCCESSFULLY PARSED mixed_policy_numbers.txt
+============================================================
+
+📄 Input File: spec/fixtures/mixed_policy_numbers.txt
+📝 Output File: parsed_files/mixed_policy_numbers_parsed.txt
+📋 Log File: log/mixed_policy_numbers_parsed.log
+
+📈 PARSING STATISTICS:
+  Total Lines Parsed: 30
+  ✅ Valid Numbers: 20
+  ❌ Checksum Errors (ERR): 4
+  ❓ Invalid Digits (ILL): 6
+
+✨ Parsing completed successfully!
+============================================================
+```
+
+**Parsing a file with parsing errors** (`spec/fixtures/malformed_content.txt`):
+
+```
+============================================================
+⚠️  PARSED malformed_content.txt WITH ERRORS
+============================================================
+
+📄 Input File: spec/fixtures/malformed_content.txt
+📝 Output File: parsed_files/malformed_content_parsed.txt
+📋 Log File: log/malformed_content_parsed.log
+
+📈 PARSING STATISTICS:
+  Total Lines Parsed: 4
+  ✅ Valid Numbers: 1
+  ❌ Checksum Errors (ERR): 2
+  ❓ Invalid Digits (ILL): 1
+
+⚠️  PARSER ERRORS ENCOUNTERED:
+  1. Malformed number line at 3: element size differs (7 should be 10)
+
+✨ Parsing completed successfully!
+============================================================
+```
+
+**Available Sample Files:**
+- `spec/fixtures/sample.txt` - Clean policy numbers for basic testing
+- `spec/fixtures/mixed_policy_numbers.txt` - Mix of valid, invalid digits, and checksum errors  
+- `spec/fixtures/checksum_errors.txt` - Policy numbers with checksum validation failures
+- `spec/fixtures/invalid_digits.txt` - Policy numbers with unrecognizable digit patterns
+- `spec/fixtures/malformed_content.txt` - Malformed input to test error handling
+
+
+#### Generating Test Data
+
+Generate sample policy numbers for testing:
 
 ```bash
-policy_ocr generate_policy_numbers
+# Direct execution
+./policy_ocr generate_policy_numbers
+
+# OR using bundle exec  
+bundle exec ./policy_ocr generate_policy_numbers
+```
+
+This command generates 30 policy numbers by default:
+- 20 valid policy numbers with correct checksums
+- 6 policy numbers with invalid digit patterns (displayed as `?`)
+- 4 policy numbers with checksum errors (marked as `ERR`)
+
+The output is printed to stdout in ASCII digital format, ready to be saved to a file for testing.
+
+### Input File Format
+
+PolicyOCR expects input files containing ASCII art representations of 9-digit policy numbers. Each policy number occupies exactly 4 lines:
+
+```
+ _  _  _  _  _  _  _  _  _ 
+| || || || || || || || || |
+|_||_||_||_||_||_||_||_||_|
+                           
+```
+
+**Format Rules:**
+- Each digit is 3 characters wide
+- Policy numbers are separated by blank lines
+- Invalid digits are represented with `?` characters
+- Files can contain multiple policy numbers
+
+**Example Input File:**
+```
+ _  _  _  _  _  _  _  _  _ 
+| || || || || || || || || |
+|_||_||_||_||_||_||_||_||_|
+                           
+                           
+  |  |  |  |  |  |  |  |  |
+  |  |  |  |  |  |  |  |  |
+                           
 ```
 
 ### Running Tests
@@ -36,6 +200,52 @@ policy_ocr generate_policy_numbers
 ```bash
 bundle exec rspec
 ```
+
+### Troubleshooting
+
+#### Command Not Found: `./policy_ocr`
+- **Solution**: Make sure you're in the project directory and the file is executable:
+  ```bash
+  chmod +x policy_ocr
+  ```
+- **Alternative**: Use `bundle exec` instead:
+  ```bash
+  bundle exec ./policy_ocr --help
+  ```
+
+#### Bundle Installation Issues
+- **Ruby Version**: Ensure you're using Ruby 3.0 or higher:
+  ```bash
+  ruby --version
+  ```
+- **Bundler Not Found**: Install bundler:
+  ```bash
+  gem install bundler
+  ```
+- **Permission Issues**: Try using `--user-install` flag:
+  ```bash
+  bundle install --user-install
+  ```
+
+#### File Not Found Errors
+- **Check File Path**: Ensure the input file exists and path is correct
+- **Relative vs Absolute Paths**: Try using absolute paths if relative paths don't work
+- **File Permissions**: Ensure the input file is readable:
+  ```bash
+  ls -la your_input_file.txt
+  ```
+
+#### Empty or Incorrect Output
+- **Check Input Format**: Ensure your input file follows the exact ASCII art format
+- **View Sample Files**: Compare your input with files in `spec/fixtures/`:
+  ```bash
+  cat spec/fixtures/sample.txt
+  ```
+- **Check Logs**: Review the detailed log files in `log/` directory for parsing errors
+- **Test with Known Good File**: Try parsing a sample file first:
+  ```bash
+  ./policy_ocr parse spec/fixtures/sample.txt
+  ```
 
 ## Architecture
 
@@ -48,6 +258,13 @@ Some benefits of this approach include:
 - **Testability**: Small, focused classes make unit testing easier.
 - **Reusability**: The same interactor can be used across different entry points (web, API, jobs).
 - **Clarity**: Encourages clear, intention-revealing naming and structure for business operations.
+
+**Key Features:**
+- **Thor-based**: Uses the Thor gem for robust command-line argument parsing and help system
+- **Error Handling**: Graceful handling of file not found, parsing errors, and system exceptions
+- **Logging**: Thread-local logging with detailed debugging information stored in `log/` directory
+- **Output Management**: Automatic directory creation and file naming based on input files
+- **Separation of Concerns**: Each CLI operation is handled by a dedicated interactor
 
 ### Core Components
 
@@ -69,9 +286,35 @@ Some benefits of this approach include:
 #### Validation
 - **ValidatePolicyNumberChecksum**: Implements weighted checksum validation using the formula: `(d1�1 + d2�2 + ... + d9�9) mod 11 = 0`
 
-#### CLI Interface
+#### CLI Interface (`lib/policy_ocr/cli/`)
 - **PolicyOcr::Cli**: Thor-based command-line interface for parsing and generating policy numbers
+- **PrintReport**: Interactor for displaying parsing results and statistics
+- **WriteOutputFile**: Interactor for writing parsed results to output files with proper directory structure
+- **GenerateSamplePolicyNumbers**: Interactor for generating test policy numbers with configurable distributions
 
+
+### Class Organization
+
+The final output structure of a parsed document has the following class structure:
+
+```
+┌───────────────────────────────────────────────────────────────────────────────────────────┐
+│                                      Parsed Document                                      │
+│                                                                                           │
+│                                                                                           │
+│    ┌──────────────────┐         ┌──────────────────┐           ┌──────────────────┐       │
+│    │ Policy::Document │         │  Policy::Number  │           │    DigitalInt    │       │
+│    │                  │         │                  │           │                  │       │
+│    │policy_numbers    │────────▶│digital_ints      │─────────▶ │int_value         │       │
+│    │                  │         │                  │           │pattern           │       │
+│    │                  │         │                  │           │                  │       │
+│    └──────────────────┘         └──────────────────┘           └──────────────────┘       │
+│                                                                                           │
+│                                                                                           │
+│                                                                                           │
+│                                                                                           │
+└───────────────────────────────────────────────────────────────────────────────────────────┘
+```
 
 ### Parsing Workflow
 
@@ -99,13 +342,12 @@ This is the general sequence of parsing, starting with the ParsePolicyDocumentFi
              │                               │                              │                           │           
              │                               │                              │                           │           
              │                               │                              │                           │           
-             │                               │                              │    policy_number          │           
+             │                               │                              │      Policy::Number       │           
              │                               │                              │◀──────────────────────────│           
-             │                               │      policy_number           │                           │           
+             │                               │       Policy::Number         │                           │           
              │                               │◀─────────────────────────────│                           │           
-             │    Array of Policy::Number    │                              │                           │           
+             │        Policy::Document       │                              │                           │           
              │◀──────────────────────────────│                              │                           │           
-             │                               │                              │                           │           
              │                               │                              │                           │           
              │                               │                              │                           │           
              │                               │                              │                           │           
@@ -113,8 +355,35 @@ This is the general sequence of parsing, starting with the ParsePolicyDocumentFi
 
 ```
 
-### Design Patterns
+### CLI Interface Workflow
 
-- **Interactor Pattern**: Used for business logic with clear success/failure states
-- **Factory Pattern**: DigitalInt creation from various input formats
-- **Strategy Pattern**: Different handling for valid vs invalid policy numbers
+The command-line interface orchestrates the parsing workflow through specialized interactors:
+
+```
+┌─────────────────┐    ┌─────────────────────────┐     ┌─────────────────┐       ┌─────────────────┐
+│                 │    │                         │     │                 │       │                 │
+│       CLI       │    │ ParsePolicyDocumentFile │     │ WriteOutputFile │       │   PrintReport   │
+│                 │    │                         │     │                 │       │                 │
+└────────┬────────┘    └────────────┬────────────┘     └────────┬────────┘       └────────┬────────┘
+         │                          │                           │                         │         
+         │                          │                           │                         │         
+         │           call           │                           │                         │         
+         │─────────────────────────▶│                           │                         │         
+         │                          │                           │                         │         
+         │           result         │                           │                         │         
+         │◀─────────────────────────┤                           │                         │         
+         │                          │                           │                         │         
+         │                          │                           │                         │         
+         │                          │    call                   │                         │         
+         │──────────────────────────┼──────────────────────────▶│                         │         
+         │                          │                           │                         │         
+         │                          │   result                  │                         │         
+         │◀─────────────────────────┼───────────────────────────│                         │         
+         │                          │                           │                         │         
+         │                          │                           │                         │         
+         │                          │            call           │                         │         
+         │──────────────────────────┼───────────────────────────┼────────────────────────▶│         
+         │                          │                           │                         │         
+         │                          │                           │                         │         
+         │                          │                           │                         │         
+```
