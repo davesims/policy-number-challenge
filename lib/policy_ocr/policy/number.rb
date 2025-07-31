@@ -14,13 +14,13 @@ module PolicyOcr
         @digital_ints = digital_ints
       end
 
-      def valid?
+      def all_digits_valid?
         return false if digital_ints.empty?
 
         digital_ints.all?(&:valid?)
       end
 
-      def checksum?
+      def checksum_valid?
         PolicyOcr::ValidatePolicyNumberChecksum.call(policy_number: self).success?
       end
 
@@ -33,8 +33,8 @@ module PolicyOcr
       end
 
       def message
-        return INVALID_DIGITS_MESSAGE unless valid?
-        return CHECKSUM_ERROR_MESSAGE unless checksum?
+        return INVALID_DIGITS_MESSAGE unless all_digits_valid?
+        return CHECKSUM_ERROR_MESSAGE unless checksum_valid?
         ""
       end
 

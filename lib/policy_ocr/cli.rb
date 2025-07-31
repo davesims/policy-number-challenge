@@ -64,7 +64,7 @@ module PolicyOcr
 
     def checksum_valid?(digital_ints)
       policy_number = PolicyOcr::Policy::Number.new(digital_ints)
-      PolicyOcr::ValidatePolicyNumberChecksum.call(policy_number:).success?
+      policy_number.checksum_valid?
     end
 
     def generate_valid_number

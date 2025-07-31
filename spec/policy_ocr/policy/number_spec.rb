@@ -28,12 +28,12 @@ RSpec.describe PolicyOcr::Policy::Number do
     end
   end
 
-  describe "#valid?" do
+  describe "#all_digits_valid?" do
     context "when all digital ints are valid" do
       it "returns true" do
         number = PolicyOcr::Policy::Number.new(valid_digital_ints)
         
-        expect(number.valid?).to be true
+        expect(number.all_digits_valid?).to be true
       end
     end
 
@@ -41,7 +41,7 @@ RSpec.describe PolicyOcr::Policy::Number do
       it "returns false" do
         number = PolicyOcr::Policy::Number.new(invalid_digital_ints)
         
-        expect(number.valid?).to be false
+        expect(number.all_digits_valid?).to be false
       end
     end
 
@@ -49,16 +49,16 @@ RSpec.describe PolicyOcr::Policy::Number do
       it "returns false" do
         number = PolicyOcr::Policy::Number.new([])
         
-        expect(number.valid?).to be false
+        expect(number.all_digits_valid?).to be false
       end
     end
   end
 
-  describe "#checksum?" do
+  describe "#checksum_valid?" do
     it "delegates to ValidatePolicyNumberChecksum" do
       number = PolicyOcr::Policy::Number.new(valid_digital_ints)
       expect(PolicyOcr::ValidatePolicyNumberChecksum).to receive(:call).with(policy_number: number).and_call_original
-      number.checksum?
+      number.checksum_valid?
     end
   end
 
@@ -146,15 +146,15 @@ RSpec.describe PolicyOcr::Policy::Number do
       end
     end
 
-    describe "#valid?" do
+    describe "#all_digits_valid?" do
       it "returns false" do
-        expect(invalid_number.valid?).to be false
+        expect(invalid_number.all_digits_valid?).to be false
       end
     end
 
-    describe "#checksum?" do
+    describe "#checksum_valid?" do
       it "returns false" do
-        expect(invalid_number.checksum?).to be false
+        expect(invalid_number.checksum_valid?).to be false
       end
     end
 
