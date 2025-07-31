@@ -40,6 +40,18 @@ module PolicyOcr
         ""
       end
 
+      def valid?
+        all_digits_valid? && checksum_valid?
+      end
+
+      def has_checksum_error?
+        all_digits_valid? && !checksum_valid?
+      end
+
+      def has_invalid_digits?
+        !all_digits_valid?
+      end
+
       class Invalid < Number
         def initialize
           digital_ints = Array.new(9, PolicyOcr::DigitalInt::Invalid.new(pattern: "---"))

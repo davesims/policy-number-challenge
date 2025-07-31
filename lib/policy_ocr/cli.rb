@@ -13,9 +13,10 @@ module PolicyOcr
     desc "parse FILE", "Parse policy numbers from an OCR text file"
     def parse(file)
       validate_file_exists(file)
+      setup_logging(file)
 
       result = parse_policy_file(file)
-      handle_parse_result(result)
+      handle_parse_result(result, file)
     rescue StandardError => e
       handle_parsing_error(e)
     end
@@ -42,12 +43,15 @@ module PolicyOcr
       PolicyOcr::Parser::ParsePolicyDocumentFile.call(file_path: file)
     end
 
-    def handle_parse_result(result)
+    def handle_parse_result(result, input_file)
       if result.success?
-        puts result.policy_document
-        display_parser_errors(result) if result.parser_errors&.any?
+        output = result.policy_document.to_s
+        output_file = write_output_file(output, input_file)
+        log_file = get_log_file_path(input_file)
+        display_parsing_report(result, input_file, output_file, log_file)
       else
-        puts "Error: #{result.error}"
+        log_file = get_log_file_path(input_file)
+        display_error_report(input_file, result.error, log_file)
         exit 1
       end
     end
@@ -60,6 +64,92 @@ module PolicyOcr
     def handle_parsing_error(error)
       puts "Error parsing file: #{error.message}"
       exit 1
+    end
+
+    def display_error_report(input_file, error_message, log_file)
+      filename = File.basename(input_file)
+      puts "\n" + "=" * 60
+      puts "❌ UNABLE TO PARSE #{filename}"
+      puts "=" * 60
+      puts
+      puts "📄 Input File: #{input_file}"
+      puts "📋 Log File: #{log_file}"
+      puts "❌ Error: #{error_message}"
+      puts
+      puts "💡 Please check that the file exists and contains valid policy number data."
+      puts "💡 Check the log file for detailed error information."
+      puts "=" * 60
+    end
+
+    def setup_logging(input_file)
+      log_file = get_log_file_path(input_file)
+      PolicyOcr.set_log_path(log_file)
+    end
+
+    def get_log_file_path(input_file)
+      output_dir = "parsed_files"
+      Dir.mkdir(output_dir) unless Dir.exist?(output_dir)
+      
+      base_name = File.basename(input_file, ".*")
+      File.join(output_dir, "parsed_#{base_name}.log")
+    end
+
+    def write_output_file(output, input_file)
+      output_dir = "parsed_files"
+      Dir.mkdir(output_dir) unless Dir.exist?(output_dir)
+      
+      base_name = File.basename(input_file, ".*")
+      output_filename = File.join(output_dir, "#{base_name}_parsed.txt")
+      File.write(output_filename, output)
+      output_filename
+    end
+
+    def display_parsing_report(result, input_file, output_file, log_file)
+      policy_numbers = result.policy_document.policy_numbers
+      total_count = policy_numbers.size
+      valid_count = policy_numbers.count { |pn| pn.message.empty? }
+      err_count = policy_numbers.count { |pn| pn.message == "ERR" }
+      ill_count = policy_numbers.count { |pn| pn.message == "ILL" }
+      
+      filename = File.basename(input_file)
+      has_parser_errors = result.parser_errors&.any?
+      
+      header = if has_parser_errors
+                 "⚠️  PARSED #{filename} WITH ERRORS"
+               else
+                 "✅ SUCCESSFULLY PARSED #{filename}"
+               end
+      
+      puts "\n" + "=" * 60
+      puts header
+      puts "=" * 60
+      puts
+      puts "📄 Input File: #{input_file}"
+      puts "📝 Output File: #{output_file}"
+      puts "📋 Log File: #{log_file}"
+      puts
+      puts "📈 PARSING STATISTICS:"
+      puts "  Total Lines Parsed: #{total_count}"
+      puts "  ✅ Valid Numbers: #{valid_count} (#{percentage(valid_count, total_count)}%)"
+      puts "  ❌ Checksum Errors (ERR): #{err_count} (#{percentage(err_count, total_count)}%)"
+      puts "  ❓ Invalid Digits (ILL): #{ill_count} (#{percentage(ill_count, total_count)}%)"
+      
+      if result.parser_errors&.any?
+        puts
+        puts "⚠️  PARSER ERRORS ENCOUNTERED:"
+        result.parser_errors.each_with_index do |error, index|
+          puts "  #{index + 1}. #{error}"
+        end
+      end
+      
+      puts
+      puts "✨ Parsing completed successfully!"
+      puts "=" * 60
+    end
+
+    def percentage(count, total)
+      return 0 if total.zero?
+      ((count.to_f / total) * 100).round(1)
     end
 
     def checksum_valid?(digital_ints)

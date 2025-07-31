@@ -14,9 +14,17 @@ module PolicyOcr
   CARRIAGE_RETURN = "\n"
   DIGITAL_INTS_DEFINITION_PATH = "./lib/policy_ocr/digital_int/digital_ints.yml"
   LOG_PATH = "policy_ocr.log"
+  
+  def self.current_log_path
+    @current_log_path || LOG_PATH
+  end
+  
+  def self.set_log_path(path)
+    @current_log_path = path
+  end
 
   def self.logger_for(klass)
-    Logger.new(LOG_PATH).tap do |log|
+    Logger.new(current_log_path).tap do |log|
       log.level = Logger::DEBUG
       log.formatter = proc do |severity, datetime, _progname, msg|
         full_name = klass.respond_to?(:name) ? klass.name : klass.class.name

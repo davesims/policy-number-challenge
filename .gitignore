@@ -1,6 +1,9 @@
 # Log files
 *.log
 
+# Generated output files
+parsed_files/
+
 # Temporary files
 tmp/
 

@@ -91,4 +91,55 @@ RSpec.describe PolicyOcr::Policy::Document do
       expect(document.policy_numbers.first).to be_a(PolicyOcr::Policy::Number)
     end
   end
+
+  describe "statistics methods" do
+    let(:policy_numbers) { [valid_number, checksum_error_number, invalid_number] }
+    let(:document) { described_class.new(policy_numbers) }
+
+    describe "#total_count" do
+      it "returns the total number of policy numbers" do
+        expect(document.total_count).to eq(3)
+      end
+    end
+
+    describe "#valid_count" do
+      it "returns count of valid policy numbers" do
+        expect(document.valid_count).to eq(1)
+      end
+    end
+
+    describe "#err_count" do
+      it "returns count of policy numbers with checksum errors" do
+        expect(document.err_count).to eq(1)
+      end
+    end
+
+    describe "#ill_count" do
+      it "returns count of policy numbers with invalid digits" do
+        expect(document.ill_count).to eq(1)
+      end
+    end
+
+    context "with empty policy numbers" do
+      let(:empty_document) { described_class.new([]) }
+
+      it "handles empty document gracefully" do
+        expect(empty_document.total_count).to eq(0)
+        expect(empty_document.valid_count).to eq(0)
+        expect(empty_document.err_count).to eq(0)
+        expect(empty_document.ill_count).to eq(0)
+      end
+    end
+
+    context "with all valid policy numbers" do
+      let(:all_valid_document) { described_class.new([valid_number, valid_number]) }
+
+      it "returns correct counts for all valid" do
+        expect(all_valid_document.total_count).to eq(2)
+        expect(all_valid_document.valid_count).to eq(2)
+        expect(all_valid_document.err_count).to eq(0)
+        expect(all_valid_document.ill_count).to eq(0)
+      end
+    end
+  end
 end

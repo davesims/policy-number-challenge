@@ -12,6 +12,23 @@ module PolicyOcr
       def to_s
         policy_numbers.map(&:to_s).join(PolicyOcr::CARRIAGE_RETURN)
       end
+
+      # Statistics methods
+      def total_count
+        policy_numbers.size
+      end
+
+      def valid_count
+        policy_numbers.count(&:valid?)
+      end
+
+      def err_count
+        policy_numbers.count(&:has_checksum_error?)
+      end
+
+      def ill_count
+        policy_numbers.count(&:has_invalid_digits?)
+      end
     end
   end
 end

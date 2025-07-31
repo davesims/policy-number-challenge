@@ -25,23 +25,56 @@ RSpec.describe PolicyOcr::Cli do
     context "with valid policy numbers" do
       let(:lines) { subject.strip.split("\n") }
 
-      it "outputs valid numbers with trailing space" do
-        expect(output).to include("000000000 ")
-        expect(output).to include("111111111 ")
-        lines.each do |line|
-          expect(line).to match(line_matcher)
-        end
-        expect(lines.size).to eq(11)
+      it "displays a formatted parsing report" do
+        expect(output).to include("✅ SUCCESSFULLY PARSED sample.txt")
+        expect(output).to include("Input File: spec/fixtures/sample.txt")
+        expect(output).to include("Output File: parsed_files/sample_parsed.txt")
+        expect(output).to include("Log File: parsed_files/parsed_sample.log")
+        expect(output).to include("Total Lines Parsed: 11")
+        expect(output).to include("Valid Numbers: 2")
+        expect(output).to include("Checksum Errors (ERR): 9")
+        expect(output).to include("Invalid Digits (ILL): 0")
+        expect(output).to include("Parsing completed successfully!")
         expect(exit_code).to eq(0)
+      end
+
+      let(:output_file) { "parsed_files/sample_parsed.txt" }
+      let(:log_file) { "parsed_files/parsed_sample.log" }
+
+      before do
+        File.delete(output_file) if File.exist?(output_file)
+        File.delete(log_file) if File.exist?(log_file)
+      end
+
+      after do
+        File.delete(output_file) if File.exist?(output_file)
+        File.delete(log_file) if File.exist?(log_file)
+      end
+
+      it "creates output file with correct name and content" do
+        # Run the command
+        subject
+        
+        # Check file was created
+        expect(File.exist?(output_file)).to be true
+        
+        # Check file content matches expected policy numbers
+        file_content = File.read(output_file)
+        expect(file_content).to include("000000000 ")
+        expect(file_content).to include("123456789 ")
+        expect(file_content).to include("111111111 ERR")
+        
+        # Check output includes file reference
+        expect(output).to include("Output File: #{output_file}")
       end
     end
 
     context "with invalid digits" do
       let(:file_path) { "spec/fixtures/invalid_digits.txt" }
 
-      it "outputs question marks with ILL suffix" do
-        expect(output).to include("ILL")
-        expect(output).to include("?")
+      it "reports invalid digits in parsing statistics" do
+        expect(output).to include("PARSED invalid_digits.txt WITH ERRORS")
+        expect(output).to include("Invalid Digits (ILL):")
         expect(exit_code).to eq(0)
       end
     end
@@ -49,20 +82,42 @@ RSpec.describe PolicyOcr::Cli do
     context "with checksum errors" do
       let(:file_path) { "spec/fixtures/checksum_errors.txt" }
 
-      it "outputs numbers with ERR suffix" do
-        expect(output).to include("ERR")
+      it "reports checksum errors in parsing statistics" do
+        expect(output).to include("✅ SUCCESSFULLY PARSED checksum_errors.txt")
+        expect(output).to include("Checksum Errors (ERR):")
         expect(exit_code).to eq(0)
       end
     end
 
     context "with mixed scenarios" do
       let(:file_path) { "spec/fixtures/mixed_policy_numbers.txt" }
+      let(:output_file) { "parsed_files/mixed_policy_numbers_parsed.txt" }
+      let(:log_file) { "parsed_files/parsed_mixed_policy_numbers.log" }
+
+      before do
+        File.delete(output_file) if File.exist?(output_file)
+        File.delete(log_file) if File.exist?(log_file)
+      end
+
+      after do
+        File.delete(output_file) if File.exist?(output_file)
+        File.delete(log_file) if File.exist?(log_file)
+      end
 
       it "handles combination of valid, invalid digits, and checksum errors" do
         expect(output).to include(" ")
         expect(output).to include("ERR")
         expect(output).to include("ILL")
         expect(exit_code).to eq(0)
+      end
+
+      it "creates output file with correct filename based on input" do
+        # Run the command
+        subject
+        
+        # Check file was created with correct name
+        expect(File.exist?(output_file)).to be true
+        expect(output).to include("Output File: #{output_file}")
       end
     end
   end
@@ -81,6 +136,7 @@ RSpec.describe PolicyOcr::Cli do
       let(:file_path) { "spec/fixtures/empty.txt" }
 
       it "handles empty files gracefully" do
+        expect(output).to include("❌ UNABLE TO PARSE empty.txt")
         expect(output).to include("Error: Failed to parse policy document: raw_text cannot be empty")
       end
     end
