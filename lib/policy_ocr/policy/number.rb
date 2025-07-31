@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 #
 # This class represents a single parsed policy number as an array of DigitalChar objects.
 #
@@ -35,6 +36,7 @@ module PolicyOcr
       def message
         return INVALID_DIGITS_MESSAGE unless all_digits_valid?
         return CHECKSUM_ERROR_MESSAGE unless checksum_valid?
+
         ""
       end
 

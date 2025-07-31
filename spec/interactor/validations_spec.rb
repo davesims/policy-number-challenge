@@ -1,17 +1,19 @@
+# frozen_string_literal: true
+
 require "spec_helper"
 
 RSpec.describe Interactor::Validations do
   before { $hook_called = false }
-  
+
   let(:test_class_with_hook) do
     Class.new do
       include Interactor
       include Interactor::Validations
-      
+
       on_validation_failed do
         $hook_called = true
       end
-      
+
       def call
         # Validation happens in before block
       end
@@ -71,7 +73,7 @@ RSpec.describe Interactor::Validations do
         end
       end
     end
-    
+
     context "when validation passes" do
       it "does not call on_validation_failed hook" do
         result = test_class.call(test_array: [1, 2, 3])
@@ -130,11 +132,11 @@ RSpec.describe Interactor::Validations do
       Class.new do
         include Interactor
         include Interactor::Validations
-        
+
         before do
           validate_presence_of(:test_key)
         end
-        
+
         def call
           # Validation happens in before block
         end

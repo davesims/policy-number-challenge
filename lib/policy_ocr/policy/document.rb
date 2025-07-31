@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 module PolicyOcr
   module Policy
     class Document
@@ -14,4 +15,3 @@ module PolicyOcr
     end
   end
 end
-

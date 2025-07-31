@@ -1,15 +1,18 @@
+# frozen_string_literal: true
+
 require "spec_helper"
 
 RSpec.describe PolicyOcr::ValidatePolicyNumberChecksum do
   subject { described_class.call(policy_number: policy_number) }
+
   let(:valid_digital_ints) do
     # Create digital ints for number 711111111 (known valid checksum)
-    [7,1,1,1,1,1,1,1,1].map { |d| PolicyOcr::DigitalInt.from_int(d) }
+    [7, 1, 1, 1, 1, 1, 1, 1, 1].map { |d| PolicyOcr::DigitalInt.from_int(d) }
   end
 
-  let(:invalid_checksum_digital_ints) do  
+  let(:invalid_checksum_digital_ints) do
     # Create digital ints for number 111111111 (invalid checksum)
-    [1,1,1,1,1,1,1,1,1].map { |d| PolicyOcr::DigitalInt.from_int(d) }
+    [1, 1, 1, 1, 1, 1, 1, 1, 1].map { |d| PolicyOcr::DigitalInt.from_int(d) }
   end
 
   let(:invalid_digits_digital_ints) do
@@ -24,7 +27,7 @@ RSpec.describe PolicyOcr::ValidatePolicyNumberChecksum do
   describe ".call" do
     context "with valid checksum" do
       let(:policy_number) { PolicyOcr::Policy::Number.new(valid_digital_ints) }
-      
+
       it "returns success" do
         expect(subject).to be_success
       end
@@ -32,7 +35,7 @@ RSpec.describe PolicyOcr::ValidatePolicyNumberChecksum do
 
     context "with invalid checksum" do
       let(:policy_number) { PolicyOcr::Policy::Number.new(invalid_checksum_digital_ints) }
-      
+
       it "returns failure" do
         expect(subject).to be_failure
       end
@@ -40,7 +43,7 @@ RSpec.describe PolicyOcr::ValidatePolicyNumberChecksum do
 
     context "with invalid digits" do
       let(:policy_number) { PolicyOcr::Policy::Number.new(invalid_digits_digital_ints) }
-      
+
       it "returns failure due to validation" do
         expect(subject).to be_failure
         expect(subject.error).to eq("policy number contains invalid digits")
@@ -49,7 +52,7 @@ RSpec.describe PolicyOcr::ValidatePolicyNumberChecksum do
 
     context "with missing policy_number" do
       subject { described_class.call({}) }
-      
+
       it "returns failure due to validation" do
         expect(subject).to be_failure
         expect(subject.error).to eq("policy_number is required")
@@ -58,9 +61,9 @@ RSpec.describe PolicyOcr::ValidatePolicyNumberChecksum do
 
     context "with nil policy_number" do
       subject { described_class.call(policy_number: nil) }
-      
+
       it "returns failure due to validation" do
-        expect(subject).to be_failure  
+        expect(subject).to be_failure
         expect(subject.error).to eq("policy_number is required")
       end
     end

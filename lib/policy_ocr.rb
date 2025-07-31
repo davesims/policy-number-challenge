@@ -8,17 +8,17 @@ require "logger"
 # Use the PolicyOcr parent namespace to encapsulate shared constants, avoid "magic strings"
 # and generally act as a config would.
 module PolicyOcr
-  DIGITS_PER_LINE = 9.freeze
-  DIGIT_WIDTH = 3.freeze
-  LINE_HEIGHT = 3.freeze
-  CARRIAGE_RETURN = "\n".freeze
-  DIGITAL_INTS_DEFINITION_PATH = "./lib/policy_ocr/digital_int/digital_ints.yml".freeze
-  LOG_PATH = "policy_ocr.log".freeze
+  DIGITS_PER_LINE = 9
+  DIGIT_WIDTH = 3
+  LINE_HEIGHT = 3
+  CARRIAGE_RETURN = "\n"
+  DIGITAL_INTS_DEFINITION_PATH = "./lib/policy_ocr/digital_int/digital_ints.yml"
+  LOG_PATH = "policy_ocr.log"
 
   def self.logger_for(klass)
     Logger.new(LOG_PATH).tap do |log|
       log.level = Logger::DEBUG
-      log.formatter = proc do |severity, datetime, progname, msg|
+      log.formatter = proc do |severity, datetime, _progname, msg|
         full_name = klass.respond_to?(:name) ? klass.name : klass.class.name
         "[#{full_name} #{datetime.strftime('%Y-%m-%d %H:%M:%S')}] #{severity}: #{msg}\n"
       end
@@ -27,7 +27,7 @@ module PolicyOcr
 end
 
 # I've been preferring explicit requires to Dir/glob, as it makes the dependencies clearer
-# and avoids potential load order issues. 
+# and avoids potential load order issues.
 
 # Load root level files first
 require_relative "interactor/validations"
@@ -46,4 +46,3 @@ require_relative "policy_ocr/policy/document"
 require_relative "policy_ocr/parser/parse_policy_document_file"
 require_relative "policy_ocr/parser/parse_policy_document_text"
 require_relative "policy_ocr/parser/parse_policy_number_line"
-

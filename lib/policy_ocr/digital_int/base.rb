@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 module PolicyOcr
   module DigitalInt
     class Base
       attr_reader :int_value
-      alias_method :to_i, :int_value
+      alias to_i int_value
 
       def pattern
         self.class.pattern

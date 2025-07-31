@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 FactoryBot.define do
-  factory :interactor_context, class: Interactor::Context do
+  factory :interactor_context, class: 'Interactor::Context' do
     initialize_with { new(attributes) }
   end
 

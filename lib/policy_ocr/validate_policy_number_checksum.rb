@@ -18,7 +18,7 @@ module PolicyOcr
     # (d1 + (2 * d2) + (3 * d3) + ... + (9 * d9)) % 11 == 0
     # where d1 to d9 are the digits of the policy number in reverse order.
     #
-    # example use: 
+    # example use:
     #   policy_number = "123456789"
     #   PolicyOcr::ValidatePolicyNumberChecksum.call(policy_number: policy_number).success? # => false
     #
@@ -27,7 +27,7 @@ module PolicyOcr
     def call
       dot_product = sequence.zip(policy_number_digits).map { |s, d| s * d }.sum
       checksum = dot_product % 11
-      context.fail! unless checksum == 0
+      context.fail! unless checksum.zero?
     end
 
     private
