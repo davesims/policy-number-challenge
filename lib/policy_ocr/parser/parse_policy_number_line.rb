@@ -12,6 +12,8 @@ module PolicyOcr
       end
 
       on_validation_failed do
+        # Set an Invalid policy number in the context if validation fails, so that there is 
+        # no nil policy_number in the context.
         context.policy_number = PolicyOcr::Policy::Number::Invalid.new
       end
 
