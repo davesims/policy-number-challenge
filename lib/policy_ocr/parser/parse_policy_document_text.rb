@@ -12,8 +12,8 @@ module PolicyOcr
 
       # Parses raw text of a policy document into policy numbers.
       #
-      # Takes raw text and splits it on carriage returns, slicing the lines into 
-      # groups of LINE_HEIGHT (3 lines) to represent each policy number, then sends 
+      # Takes raw text and splits it on carriage returns, slicing the lines into
+      # groups of LINE_HEIGHT (3 lines) to represent each policy number, then sends
       # each group of lines to ParsePolicyNumberLine to parse the policy number.
       #
       # @param context [Interactor::Context] must contain raw_text
@@ -31,13 +31,13 @@ module PolicyOcr
       private
 
       # number_lines is the entire document represented as an N x LINE_HEIGHT
-      # array, where N is the number of policy numbers in the document, and 
+      # array, where N is the number of policy numbers in the document, and
       # LINE_HEIGHT is the number of lines (3) per policy number, i.e., the height
       # of a digit pattern in chars.
-      def number_lines 
+      def number_lines
         raw_text
           .split(PolicyOcr::CARRIAGE_RETURN)
-          .reject.with_index { |_, i| (i + 1) % 4 == 0 } # remove every fourth line as they are empty
+          .reject.with_index { |_, i| ((i + 1) % 4).zero? } # remove every fourth line as they are empty
           .each_slice(PolicyOcr::LINE_HEIGHT)
           .to_a
       end
