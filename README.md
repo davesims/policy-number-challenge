@@ -48,6 +48,8 @@ The command line interface has two commands: `parse` and `generate_policy_number
 
 #### Parse:
 
+The `parse` command takes a filename and attempts to parse the policy numbers.
+
 Syntax
 
 ```bash
@@ -66,6 +68,8 @@ cat parsed_files/sample_parsed.txt
 ```
 
 #### Generate Policy Numbers (test data):
+
+The `generate_policy_numbers` command creates ASCII test data containing randomized 9-digit policy numbers in the 3-line format expected by the OCR parser. This includes a mix of valid numbers, numbers with checksum errors, and numbers with invalid digit patterns for comprehensive testing.
 
 Syntax
 

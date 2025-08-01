@@ -6,6 +6,21 @@ RSpec.describe PolicyOcr::DigitalInt do
   let(:pattern) { " _ | ||_|" }
   let(:digit) { described_class.from_pattern(pattern) }
 
+  def self.expected_patterns
+    {
+      PolicyOcr::DigitalInt::Zero => " _ | ||_|",
+      PolicyOcr::DigitalInt::One => "     |  |",
+      PolicyOcr::DigitalInt::Two => " _  _||_ ",
+      PolicyOcr::DigitalInt::Three => " _  _| _|",
+      PolicyOcr::DigitalInt::Four => "   |_|  |",
+      PolicyOcr::DigitalInt::Five => " _ |_  _|",
+      PolicyOcr::DigitalInt::Six => " _ |_ |_|",
+      PolicyOcr::DigitalInt::Seven => " _   |  |",
+      PolicyOcr::DigitalInt::Eight => " _ |_||_|",
+      PolicyOcr::DigitalInt::Nine => " _ |_| _|"
+    }
+  end
+
   describe ".all_numbers" do
     it "returns all digit classes" do
       expect(described_class.all_numbers).to eq([
@@ -28,6 +43,46 @@ RSpec.describe PolicyOcr::DigitalInt do
 
       it "returns Invalid instance for invalid pattern" do
         expect(digit).to be_a(PolicyOcr::DigitalInt::Invalid)
+      end
+    end
+  end
+
+  describe "digit classes" do
+    expected_patterns.each do |digit_class, expected_pattern|
+      digit_value = digit_class.name.split("::").last.downcase
+      expected_int = %w[zero one two three four five six seven eight nine].index(digit_value)
+
+      describe digit_class do
+        describe ".pattern" do
+          it "returns correct ASCII art pattern" do
+            expect(digit_class.pattern).to eq(expected_pattern)
+          end
+        end
+
+        describe "#to_i" do
+          it "returns #{expected_int}" do
+            expect(digit_class.new.to_i).to eq(expected_int)
+          end
+        end
+
+        describe "#pattern" do
+          it "returns the same as class pattern" do
+            instance = digit_class.new
+            expect(instance.pattern).to eq(digit_class.pattern)
+          end
+        end
+
+        describe "#valid?" do
+          it "returns true" do
+            expect(digit_class.new.valid?).to be true
+          end
+        end
+
+        describe "#to_s" do
+          it "returns string representation of integer value" do
+            expect(digit_class.new.to_s).to eq(expected_int.to_s)
+          end
+        end
       end
     end
   end
