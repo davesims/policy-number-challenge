@@ -215,7 +215,6 @@ Some benefits of this approach include:
 - **Error Handling**: Graceful handling of file not found, parsing errors, and system exceptions
 - **Logging**: Thread-local logging with detailed debugging information stored in `log/` directory
 - **Output Management**: Automatic directory creation and file naming based on input files
-- **Separation of Concerns**: Each CLI operation is handled by a dedicated interactor
 
 ### Core Components
 
