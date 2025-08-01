@@ -30,8 +30,7 @@ module PolicyOcr
     private
 
     def checksum_valid?(digital_ints)
-      policy_number = PolicyOcr::Policy::Number.new(digital_ints)
-      policy_number.checksum_valid?
+      PolicyOcr::Policy::Number.new(digital_ints).checksum_valid?
     end
 
     def generate_valid_number
