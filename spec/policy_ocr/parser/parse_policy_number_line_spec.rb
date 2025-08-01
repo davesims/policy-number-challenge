@@ -82,9 +82,9 @@ RSpec.describe PolicyOcr::Parser::ParsePolicyNumberLine do
         it "fails with character alignment error and shows offending lines" do
           expect(result).to be_failure
           expect(result.error).to include("Line 3: Lines must be divisible by 3 characters for proper digit parsing")
-          expect(result.error).to include('1: "X" (1 chars, 0 digits)')
-          expect(result.error).to include('2: "ABC" (3 chars, 1 digits)')
-          expect(result.error).to include('3: "DEFGH" (5 chars, 1 digits)')
+          expect(result.error).to include('"X" (1 chars, 0 digits)')
+          expect(result.error).to include('"ABC" (3 chars, 1 digits)')
+          expect(result.error).to include('"DEFGH" (5 chars, 1 digits)')
           expect(result.policy_number).to be_a(PolicyOcr::Policy::Number::Unparseable)
         end
       end
@@ -99,9 +99,9 @@ RSpec.describe PolicyOcr::Parser::ParsePolicyNumberLine do
         it "fails with digit count error and shows offending lines" do
           expect(result).to be_failure
           expect(result.error).to include("Line 6: All lines must have exactly 9 digits")
-          expect(result.error).to include('1: "" (0 chars, 0 digits)')
-          expect(result.error).to include('2: "ABCDEFGHIJKLMNOPQRSTUVWXYZ1" (27 chars, 9 digits)')
-          expect(result.error).to include('3: "ABCDEFGHIJKLMNOPQRSTUVWXYZ2" (27 chars, 9 digits)')
+          expect(result.error).to include('"" (0 chars, 0 digits)')
+          expect(result.error).to include('"ABCDEFGHIJKLMNOPQRSTUVWXYZ1" (27 chars, 9 digits)')
+          expect(result.error).to include('"ABCDEFGHIJKLMNOPQRSTUVWXYZ2" (27 chars, 9 digits)')
           expect(result.policy_number).to be_a(PolicyOcr::Policy::Number::Unparseable)
         end
       end
@@ -126,9 +126,9 @@ RSpec.describe PolicyOcr::Parser::ParsePolicyNumberLine do
           expect(result).to be_failure
           expect(result.policy_number).to be_a(PolicyOcr::Policy::Number::Unparseable)
           expect(result.error).to include("Line 1:")
-          expect(result.error).to include('1: "invalid" (7 chars, 2 digits)')
-          expect(result.error).to include('2: "data" (4 chars, 1 digits)')
-          expect(result.error).to include('3: "here" (4 chars, 1 digits)')
+          expect(result.error).to include('"invalid" (7 chars, 2 digits)')
+          expect(result.error).to include('"data" (4 chars, 1 digits)')
+          expect(result.error).to include('"here" (4 chars, 1 digits)')
         end
       end
 
@@ -156,9 +156,9 @@ RSpec.describe PolicyOcr::Parser::ParsePolicyNumberLine do
       describe "#format_offending_lines" do
         it "formats lines with character and digit counts" do
           formatted = instance.send(:format_offending_lines)
-          expect(formatted).to include('1: "AB" (2 chars, 0 digits)')
-          expect(formatted).to include('2: "DEFGHIJKLM" (10 chars, 3 digits)')
-          expect(formatted).to include('3: "NO" (2 chars, 0 digits)')
+          expect(formatted).to include('"AB" (2 chars, 0 digits)')
+          expect(formatted).to include('"DEFGHIJKLM" (10 chars, 3 digits)')
+          expect(formatted).to include('"NO" (2 chars, 0 digits)')
         end
       end
 
@@ -166,7 +166,7 @@ RSpec.describe PolicyOcr::Parser::ParsePolicyNumberLine do
         it "includes line number and formatted offending lines" do
           message = instance.send(:character_alignment_error_message)
           expect(message).to include("Line 4: Lines must be divisible by 3 characters")
-          expect(message).to include('1: "AB" (2 chars, 0 digits)')
+          expect(message).to include('"AB" (2 chars, 0 digits)')
           expect(message).to end_with("\n")
         end
       end
@@ -175,7 +175,7 @@ RSpec.describe PolicyOcr::Parser::ParsePolicyNumberLine do
         it "includes line number and formatted offending lines" do
           message = instance.send(:digit_count_error_message)
           expect(message).to include("Line 4: All lines must have exactly 9 digits")
-          expect(message).to include('2: "DEFGHIJKLM" (10 chars, 3 digits)')
+          expect(message).to include('"DEFGHIJKLM" (10 chars, 3 digits)')
           expect(message).to end_with("\n")
         end
       end

@@ -67,10 +67,10 @@ module PolicyOcr
       end
 
       def format_offending_lines
-        lines_with_info = context.number_line.map.with_index do |line, idx|
+        lines_with_info = context.number_line.map do |line|
           char_count = line.length
           digit_count = char_count / PolicyOcr::DIGIT_WIDTH
-          "  #{idx + 1}: \"#{line}\" (#{char_count} chars, #{digit_count} digits)"
+          "  \"#{line}\" (#{char_count} chars, #{digit_count} digits)"
         end
         lines_with_info.join("\n")
       end
