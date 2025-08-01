@@ -42,13 +42,12 @@ module PolicyOcr
         return PolicyOcr::DigitalInt::Invalid.new(pattern: "?")
       end
 
-      klass = all_numbers.find { |k| k.new.to_i == int }
+      klass = all_numbers[int]
       klass.new
     end
 
     def self.logger
       PolicyOcr.logger_for(self)
     end
-
   end
 end

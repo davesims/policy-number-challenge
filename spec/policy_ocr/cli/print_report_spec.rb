@@ -109,17 +109,18 @@ RSpec.describe PolicyOcr::Cli::PrintReport do
         end
 
         it "displays a parser error" do
-          expect(output).to include("1. Error 1")
+          expect(output).to include("  1. Error 1")
         end
 
         it "displays another parser error" do
-          expect(output).to include("2. Error 2")
+          expect(output).to include("  2. Error 2")
         end
       end
     end
 
     describe "error case output" do
       let(:result) { double(success?: false, error: "Failed to parse policy document: raw_text cannot be empty") }
+      let(:output_file) { nil }
 
       it "displays error header" do
         expect(output).to include(/❌ UNABLE TO PARSE test.txt/)
@@ -131,11 +132,11 @@ RSpec.describe PolicyOcr::Cli::PrintReport do
         end
 
         it "displays file prompt" do
-          expect(output).to include("💡 Please check that the file exists")
+          expect(output).to include("💡 Please check that the file exists and contains valid policy number data.")
         end
 
         it "displays log file prompt" do
-          expect(output).to include("💡 Check the log file for detailed error information")
+          expect(output).to include("💡 Check the log file for detailed error information.")
         end
       end
 

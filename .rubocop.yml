@@ -72,4 +72,25 @@ RSpec/MultipleMemoizedHelpers:
 RSpec/VerifiedDoubles:
   Enabled: false
 
+# ASCII art patterns need specific formatting for readability
+Style/StringConcatenation:
+  Exclude:
+    - 'lib/policy_ocr/digital_int/*.rb'
+
+Style/LineEndConcatenation:
+  Exclude:
+    - 'lib/policy_ocr/digital_int/*.rb'
+
+Layout/TrailingWhitespace:
+  Exclude:
+    - 'lib/policy_ocr/digital_int/*.rb'
+
+Layout/MultilineOperationIndentation:
+  Exclude:
+    - 'lib/policy_ocr/digital_int/*.rb'
+
+Lint/MissingSuper:
+  Exclude:
+    - 'lib/policy_ocr/digital_int/*.rb'
+
 

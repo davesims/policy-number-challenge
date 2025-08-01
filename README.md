@@ -8,9 +8,8 @@ PolicyOCR is a Ruby application that parses policy numbers from ASCII digital fo
 
 ### Prerequisites
 
-- **Ruby 3.0 or higher** (tested with Ruby 3.4.4)
-- **Bundler** (gem install bundler if not installed)
-- **Git** (for cloning the repository)
+- Ruby 3.0+ ([installation guide](https://www.ruby-lang.org/en/documentation/installation/))
+- Bundler (`gem install bundler`)
 
 ### Installation
 

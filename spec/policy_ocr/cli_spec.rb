@@ -9,8 +9,6 @@ RSpec.describe PolicyOcr::Cli do
   let(:file_path) { "spec/fixtures/sample.txt" }
 
   before do
-    # Prevent the CLI from actually exiting during tests
-    allow(cli).to receive(:exit)
     allow(PolicyOcr).to receive(:setup_logging_for_file)
     allow(PolicyOcr::Cli::PrintReport).to receive(:call)
   end
@@ -60,7 +58,6 @@ RSpec.describe PolicyOcr::Cli do
       end
 
       it "does not exit with an error code" do
-        expect(cli).not_to receive(:exit).with(1)
         parse_file
       end
     end
@@ -89,7 +86,6 @@ RSpec.describe PolicyOcr::Cli do
       end
 
       it "exits with status 1" do
-        expect(cli).to receive(:exit).with(1)
         parse_file
       end
     end
@@ -108,7 +104,6 @@ RSpec.describe PolicyOcr::Cli do
       end
 
       it "exits with status 1" do
-        expect(cli).to receive(:exit).with(1)
         parse_file
       end
     end

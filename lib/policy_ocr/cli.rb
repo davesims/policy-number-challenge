@@ -10,6 +10,9 @@ module PolicyOcr
       true
     end
 
+    # Command aliases
+    map "gen" => :generate_policy_numbers
+
     desc "parse FILE", "Parse policy numbers from an OCR text file"
     def parse(file_path)
       PolicyOcr.setup_logging_for_file(file_path)
