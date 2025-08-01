@@ -3,21 +3,55 @@
 require "spec_helper"
 
 RSpec.describe PolicyOcr::DigitalInt do
-  let(:pattern) { " _ | ||_|" }
+  let(:pattern) do 
+    " _ " +
+    "| |" +
+    "|_|"
+  end
+
   let(:digit) { described_class.from_pattern(pattern) }
 
   def self.expected_patterns
     {
-      PolicyOcr::DigitalInt::Zero => " _ | ||_|",
-      PolicyOcr::DigitalInt::One => "     |  |",
-      PolicyOcr::DigitalInt::Two => " _  _||_ ",
-      PolicyOcr::DigitalInt::Three => " _  _| _|",
-      PolicyOcr::DigitalInt::Four => "   |_|  |",
-      PolicyOcr::DigitalInt::Five => " _ |_  _|",
-      PolicyOcr::DigitalInt::Six => " _ |_ |_|",
-      PolicyOcr::DigitalInt::Seven => " _   |  |",
-      PolicyOcr::DigitalInt::Eight => " _ |_||_|",
-      PolicyOcr::DigitalInt::Nine => " _ |_| _|"
+      PolicyOcr::DigitalInt::Zero => " _ " +
+                                     "| |" +
+                                     "|_|",
+
+      PolicyOcr::DigitalInt::One => "   " +
+                                    "  |" +
+                                    "  |",
+
+      PolicyOcr::DigitalInt::Two => " _ " +
+                                    " _|" +
+                                    "|_ ",
+
+      PolicyOcr::DigitalInt::Three => " _ " +
+                                      " _|" +
+                                      " _|",
+
+      PolicyOcr::DigitalInt::Four => "   " +
+                                     "|_|" +
+                                     "  |",
+
+      PolicyOcr::DigitalInt::Five => " _ " +
+                                     "|_ " +
+                                     " _|",
+
+      PolicyOcr::DigitalInt::Six => " _ " +
+                                    "|_ " +
+                                    "|_|",
+
+      PolicyOcr::DigitalInt::Seven => " _ " +
+                                      "  |" +
+                                      "  |",
+
+      PolicyOcr::DigitalInt::Eight => " _ " +
+                                      "|_|" +
+                                      "|_|",
+
+      PolicyOcr::DigitalInt::Nine => " _ " +
+                                     "|_|" +
+                                     " _|"
     }
   end
 
