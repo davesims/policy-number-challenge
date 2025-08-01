@@ -166,7 +166,6 @@ bundle exec rspec
 ### Interactor Pattern
 
 This application uses the [Interactor gem from CollectiveIdea](https://github.com/collectiveidea/interactor). This pattern uses a variation on the Command or Strategy pattern to express the basic business rules of the application. 
-Some benefits of this approach include:
 
 ### Core Components
 
