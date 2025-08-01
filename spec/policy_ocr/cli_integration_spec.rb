@@ -6,7 +6,7 @@ require "tempfile"
 require_relative "../../lib/policy_ocr/cli"
 
 RSpec.describe PolicyOcr::Cli do
-  subject(:cli_output) { `policy_ocr parse #{file_path}` }
+  subject(:cli_output) { `./policy_ocr parse #{file_path}` }
 
   let(:file_path) { "spec/fixtures/sample.txt" }
   let(:exit_code) { $CHILD_STATUS.exitstatus }
