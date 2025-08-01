@@ -67,12 +67,7 @@ module PolicyOcr
       end
 
       def format_offending_lines
-        lines_with_info = context.number_line.map do |line|
-          char_count = line.length
-          digit_count = char_count / PolicyOcr::DIGIT_WIDTH
-          "  \"#{line}\" (#{char_count} chars, #{digit_count} digits)"
-        end
-        lines_with_info.join("\n")
+        "#{context.number_line.map { |line| "  #{line}" }.join("\n")}\n"
       end
 
       def handle_parsing_error(error)
