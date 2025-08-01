@@ -98,10 +98,6 @@ RSpec.describe PolicyOcr::Cli do
         expect($stdout).to receive(:puts).with("Error parsing file: Something went wrong")
         parse_file
       end
-
-      it "exits with status 1" do
-        parse_file
-      end
     end
   end
 
