@@ -11,6 +11,7 @@ RSpec.describe PolicyOcr::Cli do
   before do
     allow(PolicyOcr).to receive(:setup_logging_for_file)
     allow(PolicyOcr::Cli::PrintReport).to receive(:call)
+    allow(Kernel).to receive(:exit).and_raise(SystemExit)
   end
 
   describe "#parse" do
@@ -73,7 +74,7 @@ RSpec.describe PolicyOcr::Cli do
 
       it "does not call the WriteOutputFile interactor" do
         expect(PolicyOcr::Cli::WriteOutputFile).not_to receive(:call)
-        parse_file
+        expect { parse_file }.to raise_error(SystemExit)
       end
 
       it "calls the PrintReport interactor with the failure result" do
@@ -82,7 +83,7 @@ RSpec.describe PolicyOcr::Cli do
           input_file: file_path,
           output_file: nil
         )
-        parse_file
+        expect { parse_file }.to raise_error(SystemExit)
       end
     end
 
@@ -96,7 +97,7 @@ RSpec.describe PolicyOcr::Cli do
 
       it "prints an error message" do
         expect($stdout).to receive(:puts).with("Error parsing file: Something went wrong")
-        parse_file
+        expect { parse_file }.to raise_error(SystemExit)
       end
     end
   end
