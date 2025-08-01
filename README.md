@@ -34,63 +34,60 @@ PolicyOCR is a Ruby application that parses policy numbers from ASCII digital fo
 
    You should see the Thor help output showing available commands.
 
-4. **Make the CLI executable** (optional, for easier access):
+4. **Make executable** (optional):
    ```bash
    chmod +x policy_ocr
-   # Add to your PATH or create an alias if desired
    ```
 
 ### Quick Start
 
-Try the application with the included sample files:
-
-1. **Parse a sample file with valid policy numbers**:
-   ```bash
-   ./policy_ocr parse spec/fixtures/sample.txt
-   ```
-
-2. **Try a file with mixed results (valid, invalid digits, checksum errors)**:
-   ```bash
-   ./policy_ocr parse spec/fixtures/mixed_policy_numbers.txt
-   ```
-
-3. **Generate your own test data**:
-   ```bash
-   ./policy_ocr generate_policy_numbers > my_test_data.txt
-   ./policy_ocr parse my_test_data.txt
-   ```
-
-4. **Check the results**:
-   - View the parsed output: `ls parsed_files/`
-   - Check the detailed logs: `ls log/`
-
-### Usage
-
-The PolicyOCR command-line interface provides two main commands:
-
-#### Parsing Policy Documents
-
-Parse policy numbers from an OCR text file:
+Test the application using sample files:
 
 ```bash
-# Direct execution (if executable)
+# Parse a sample file
 ./policy_ocr parse spec/fixtures/sample.txt
 
-# OR using bundle exec
-bundle exec ./policy_ocr parse spec/fixtures/sample.txt
+# Generate test data  
+./policy_ocr generate_policy_numbers > test_data.txt
+./policy_ocr parse test_data.txt
 
-# Try other sample files:
-./policy_ocr parse spec/fixtures/mixed_policy_numbers.txt
-./policy_ocr parse spec/fixtures/checksum_errors.txt
-./policy_ocr parse spec/fixtures/invalid_digits.txt
+# View results
+ls parsed_files/
+ls log/
 ```
 
-This command will:
-- Parse the ASCII digital format policy numbers from the input file
-- Validate checksums and identify invalid digits
-- Generate a parsed output file in the `parsed_files/` directory
-- Create a detailed log file in the `log/` directory
-- Display a summary report with statistics
+**Note**: Use `bundle exec ./policy_ocr` if you encounter permission issues.
+
+## Usage
+
+### Commands
+
+**Parse policy numbers:**
+```bash
+./policy_ocr parse <input_file>
+```
+
+**Generate test data:**
+```bash
+./policy_ocr generate_policy_numbers
+```
+
+### Input File Format
+
+PolicyOCR expects ASCII art representations of 9-digit policy numbers. Each policy number occupies exactly 4 lines:
+
+```
+ _  _  _  _  _  _  _  _  _ 
+| || || || || || || || || |
+|_||_||_||_||_||_||_||_||_|
+                           
+```
+
+**Format Rules:**
+- Each digit is 3 characters wide
+- Policy numbers are separated by blank lines
+- Invalid digits are represented with `?` characters
+- Files can contain multiple policy numbers
 
 ### Example Output
 
@@ -139,61 +136,15 @@ This command will:
 ============================================================
 ```
 
-**Available Sample Files:**
-- `spec/fixtures/sample.txt` - Clean policy numbers for basic testing
-- `spec/fixtures/mixed_policy_numbers.txt` - Mix of valid, invalid digits, and checksum errors  
-- `spec/fixtures/checksum_errors.txt` - Policy numbers with checksum validation failures
-- `spec/fixtures/invalid_digits.txt` - Policy numbers with unrecognizable digit patterns
-- `spec/fixtures/malformed_content.txt` - Malformed input to test error handling
+### Sample Files
 
+Test with included sample files:
 
-#### Generating Test Data
-
-Generate sample policy numbers for testing:
-
-```bash
-# Direct execution
-./policy_ocr generate_policy_numbers
-
-# OR using bundle exec  
-bundle exec ./policy_ocr generate_policy_numbers
-```
-
-This command generates 30 policy numbers by default:
-- 20 valid policy numbers with correct checksums
-- 6 policy numbers with invalid digit patterns (displayed as `?`)
-- 4 policy numbers with checksum errors (marked as `ERR`)
-
-The output is printed to stdout in ASCII digital format, ready to be saved to a file for testing.
-
-### Input File Format
-
-PolicyOCR expects input files containing ASCII art representations of 9-digit policy numbers. Each policy number occupies exactly 4 lines:
-
-```
- _  _  _  _  _  _  _  _  _ 
-| || || || || || || || || |
-|_||_||_||_||_||_||_||_||_|
-                           
-```
-
-**Format Rules:**
-- Each digit is 3 characters wide
-- Policy numbers are separated by blank lines
-- Invalid digits are represented with `?` characters
-- Files can contain multiple policy numbers
-
-**Example Input File:**
-```
- _  _  _  _  _  _  _  _  _ 
-| || || || || || || || || |
-|_||_||_||_||_||_||_||_||_|
-                           
-                           
-  |  |  |  |  |  |  |  |  |
-  |  |  |  |  |  |  |  |  |
-                           
-```
+- `spec/fixtures/sample.txt` - Basic valid policy numbers
+- `spec/fixtures/mixed_policy_numbers.txt` - Mix of valid, ERR, and ILL numbers  
+- `spec/fixtures/checksum_errors.txt` - Checksum validation failures
+- `spec/fixtures/invalid_digits.txt` - Unrecognizable digit patterns
+- `spec/fixtures/malformed_content.txt` - Malformed input for error testing
 
 ### Running Tests
 
@@ -247,6 +198,7 @@ bundle exec rspec
   ./policy_ocr parse spec/fixtures/sample.txt
   ```
 
+
 ## Architecture
 
 ### Interactor Pattern
@@ -281,7 +233,17 @@ Some benefits of this approach include:
 #### Digital Integer System (`lib/policy_ocr/digital_int/`)
 - **DigitalInt::Base**: Base class for digital representations
 - **DigitalInt**: Factory for creating digit instances from patterns
+- **DigitalInt::Zero through Nine**: Individual classes for each digit (0-9) with readable ASCII art patterns
 - **DigitalInt::Invalid**: Handles unrecognizable digit patterns
+
+Each digit class contains its ASCII art pattern in a readable 3-line format as requested by the challenge:
+```ruby
+def self.pattern
+  " _ " +
+  "|_|" +
+  "|_|"
+end
+```
 
 #### Validation
 - **ValidatePolicyNumberChecksum**: Implements weighted checksum validation using the formula: `(d1�1 + d2�2 + ... + d9�9) mod 11 = 0`
@@ -295,7 +257,7 @@ Some benefits of this approach include:
 
 ### Class Organization
 
-The final output structure of a parsed document has the following class structure:
+The final output structure of a parsed document has the following class organization:
 
 ```
 ┌───────────────────────────────────────────────────────────────────────────────────────────┐
