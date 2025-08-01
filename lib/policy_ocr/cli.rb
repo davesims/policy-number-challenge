@@ -41,11 +41,14 @@ module PolicyOcr
                                   desc: "Number of policy numbers with invalid digits (default: 6)"
     option :invalid_checksum_count, type: :numeric, default: 4,
                                     desc: "Number of policy numbers with checksum errors (default: 4)"
+    option :unparseable_count, type: :numeric, default: 0,
+                               desc: "Number of unparseable patterns to generate (default: 0)"
     def generate_policy_numbers
       PolicyOcr::Cli::GenerateSamplePolicyNumbers.call(
         valid_count: options[:valid_count],
         invalid_digits_count: options[:invalid_digits_count],
-        invalid_checksum_count: options[:invalid_checksum_count]
+        invalid_checksum_count: options[:invalid_checksum_count],
+        unparseable_count: options[:unparseable_count]
       )
     end
   end

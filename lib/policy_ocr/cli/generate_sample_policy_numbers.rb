@@ -10,21 +10,24 @@ module PolicyOcr
     DEFAULT_VALID_COUNT = 20
     DEFAULT_INVALID_DIGITS_COUNT = 6
     DEFAULT_INVALID_CHECKSUM_COUNT = 4
+    DEFAULT_UNPARSEABLE_COUNT = 0
 
     # Generates a collection of sample policy numbers for testing purposes.
-    # Creates a mix of valid numbers, numbers with invalid digits, and numbers with checksum errors.
+    # Creates a mix of valid numbers, numbers with invalid digits, numbers with checksum errors, and unparseable patterns.
     #
     # @param context [Interactor::Context] accepts optional parameters:
     #   - valid_count: number of valid policy numbers to generate (default: 20)
     #   - invalid_digits_count: number of policy numbers with invalid digits (default: 6)
     #   - invalid_checksum_count: number of policy numbers with checksum errors (default: 4)
+    #   - unparseable_count: number of unparseable patterns to generate (default: 0)
     # @return [Interactor::Context] prints generated ASCII patterns directly to stdout
     def call
       policy_numbers = Array.new(valid_count) { PolicyOcr::Policy::Number.new(generate_valid_number) } +
                        Array.new(invalid_digits_count) do
                          PolicyOcr::Policy::Number.new(generate_invalid_digits_number)
                        end +
-                       Array.new(invalid_checksum_count) { PolicyOcr::Policy::Number.new(generate_invalid_checksum_number) }
+                       Array.new(invalid_checksum_count) { PolicyOcr::Policy::Number.new(generate_invalid_checksum_number) } +
+                       Array.new(unparseable_count) { PolicyOcr::Policy::Number::Unparseable.new(generate_unparseable_lines) }
 
       policy_numbers.shuffle.each(&:print_pattern)
     end
@@ -39,6 +42,10 @@ module PolicyOcr
 
     def invalid_checksum_count
       context.invalid_checksum_count || DEFAULT_INVALID_CHECKSUM_COUNT
+    end
+
+    def unparseable_count
+      context.unparseable_count || DEFAULT_UNPARSEABLE_COUNT
     end
 
     # Making methods public for testing
@@ -114,6 +121,23 @@ module PolicyOcr
 
         # If no d9 value produces invalid checksum, try new base digits
       end
+    end
+
+    def generate_unparseable_lines
+      # Create patterns that will cause structural parsing failures at transpose
+      # Each line must be 27 chars but NOT divisible evenly into groups of 3
+      unparseable_patterns = [
+        # Lines with lengths that break the 3-char grouping (not multiples of 3)
+        ["X", "ABCDEFGHIJKLMNOPQRSTUVWXYZ1", "ABCDEFGHIJKLMNOPQRSTUVWXYZ2"],  # 1, 27, 27 chars
+        ["AB", "ABCDEFGHIJKLMNOPQRSTUVWXYZ1", "ABCDEFGHIJKLMNOPQRSTUVWXYZ2"], # 2, 27, 27 chars  
+        ["ABCD", "ABCDEFGHIJKLMNOPQRSTUVWXYZ1", "ABCDEFGHIJKLMNOPQRSTUVWXYZ2"], # 4, 27, 27 chars
+        # Empty lines mixed with normal lines
+        ["", "ABCDEFGHIJKLMNOPQRSTUVWXYZ1", "ABCDEFGHIJKLMNOPQRSTUVWXYZ2"], # 0, 27, 27 chars
+        # Lines with completely different lengths
+        ["SHORT", "MEDIUM_LENGTH_LINE_HERE", "THIS_IS_A_VERY_LONG_LINE_THAT_BREAKS_PARSING_EXPECTATIONS"]
+      ]
+      
+      unparseable_patterns.sample
     end
   end
 end
