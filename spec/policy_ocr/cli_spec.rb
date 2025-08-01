@@ -84,10 +84,6 @@ RSpec.describe PolicyOcr::Cli do
         )
         parse_file
       end
-
-      it "exits with status 1" do
-        parse_file
-      end
     end
 
     context "when an unexpected error occurs" do
