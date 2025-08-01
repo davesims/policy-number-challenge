@@ -103,6 +103,8 @@ cat log/sample_parsed.log
 **Parsing a file with mixed results** (`spec/fixtures/mixed_policy_numbers.txt`):
 
 ```
+➜  policy-number-challenge git:(master) ./policy_ocr parse spec/fixtures/mixed_policy_numbers.txt
+
 ============================================================
 ✅ SUCCESSFULLY PARSED mixed_policy_numbers.txt
 ============================================================
@@ -124,6 +126,8 @@ cat log/sample_parsed.log
 **Parsing a file with parsing errors** (`spec/fixtures/malformed_content.txt`):
 
 ```
+➜  policy-number-challenge git:(master) ./policy_ocr parse spec/fixtures/malformed_content.txt
+
 ============================================================
 ⚠️  PARSED malformed_content.txt WITH ERRORS
 ============================================================
