@@ -187,7 +187,7 @@ Some benefits of this approach include:
 - **DigitalInt::Invalid**: Handles unrecognizable digit patterns
 
 #### Validation
-- **ValidatePolicyNumberChecksum**: Implements weighted checksum validation using the formula: `(d1�1 + d2�2 + ... + d9�9) mod 11 = 0`
+- **ValidatePolicyNumberChecksum**: Implements weighted checksum validation using the formula: `(d1×1 + d2×2 + ... + d9×9) mod 11 = 0`
 
 #### CLI Interface (`lib/policy_ocr/cli/`)
 - **PolicyOcr::Cli**: Thor-based command-line interface for parsing and generating policy numbers
