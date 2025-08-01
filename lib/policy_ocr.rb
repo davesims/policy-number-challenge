@@ -68,3 +68,16 @@ require_relative "policy_ocr/policy/document"
 require_relative "policy_ocr/parser/parse_policy_document_file"
 require_relative "policy_ocr/parser/parse_policy_document_text"
 require_relative "policy_ocr/parser/parse_policy_number_line"
+
+# Load all digit class definitions
+require_relative "policy_ocr/digital_int/zero"
+require_relative "policy_ocr/digital_int/one"
+require_relative "policy_ocr/digital_int/two"
+require_relative "policy_ocr/digital_int/three"
+require_relative "policy_ocr/digital_int/four"
+require_relative "policy_ocr/digital_int/five"
+require_relative "policy_ocr/digital_int/six"
+require_relative "policy_ocr/digital_int/seven"
+require_relative "policy_ocr/digital_int/eight"
+require_relative "policy_ocr/digital_int/nine"
+

@@ -2,18 +2,6 @@
 
 module PolicyOcr
   module DigitalInt
-    # Load all digit class definitions
-    require_relative "digital_int/zero"
-    require_relative "digital_int/one"
-    require_relative "digital_int/two"
-    require_relative "digital_int/three"
-    require_relative "digital_int/four"
-    require_relative "digital_int/five"
-    require_relative "digital_int/six"
-    require_relative "digital_int/seven"
-    require_relative "digital_int/eight"
-    require_relative "digital_int/nine"
-
     def self.all_numbers
       [Zero, One, Two, Three, Four, Five, Six, Seven, Eight, Nine]
     end
