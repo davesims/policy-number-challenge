@@ -20,7 +20,6 @@ module PolicyOcr
 
       if result.failure?
         PolicyOcr::Cli::PrintReport.call(result:, input_file: file_path, output_file: nil)
-        # using Kernel.exit instead of Thor's exit to play nicer with specs. 
         exit 1
       end
 
