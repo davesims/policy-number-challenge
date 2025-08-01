@@ -219,6 +219,7 @@ The final output structure of a parsed document has the following class organiza
 ### Parsing Workflow
 
 This is the general sequence of parsing, starting with the ParsePolicyDocumentFile, which reads the file contents and passes the raw text to the ParsePolicyDocumentText interactor.
+ParsePolicyNumberLine creates an array of numbers, and that array is used to create the final Policy::Document. 
 
 ```
 ┌─────────────────────────┐     ┌─────────────────────────┐     ┌───────────────────────┐    ┌─────────────────────┐
@@ -234,11 +235,8 @@ This is the general sequence of parsing, starting with the ParsePolicyDocumentFi
              ├──────────────────────────────▶│                              │                           │           
              │                               │        number_line           │                           │           
              │                               │─────────────────────────────▶│                           │           
-             │                               │                              │        create             │           
+             │                               │                              │         create            │           
              │                               │                              ├──────────────────────────▶│           
-             │                               │                              │                           │           
-             │                               │                              │                           │           
-             │                               │                              │                           │           
              │                               │                              │                           │           
              │                               │                              │                           │           
              │                               │                              │                           │           
@@ -251,13 +249,12 @@ This is the general sequence of parsing, starting with the ParsePolicyDocumentFi
              │                               │                              │                           │           
              │                               │                              │                           │           
              │                               │                              │                           │           
-             │                               │                              │                           │           
 
 ```
 
 ### CLI Interface Workflow
 
-The command-line interface orchestrates the parsing workflow through specialized interactors:
+The command-line interface orchestrates the parsing workflow through interactors:
 
 ```
 ┌─────────────────┐    ┌─────────────────────────┐     ┌─────────────────┐       ┌─────────────────┐
