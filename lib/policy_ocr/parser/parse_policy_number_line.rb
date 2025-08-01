@@ -9,6 +9,7 @@ module PolicyOcr
       before do
         validate_presence_of(:number_line, :index)
         validate_size(:number_line, PolicyOcr::LINE_HEIGHT)
+        validate_structure
       end
 
       on_validation_failed do
@@ -38,10 +39,47 @@ module PolicyOcr
 
       private
 
+      def validate_structure
+        # Use the validate method from Interactor::Validations to check structural integrity
+        validate(character_alignment_error_message) do
+          context.number_line.all? { |line| (line.length % PolicyOcr::DIGIT_WIDTH).zero? }
+        end
+
+        validate(digit_count_error_message) do
+          line_digit_counts = context.number_line.map { |line| line.length / PolicyOcr::DIGIT_WIDTH }
+          line_digit_counts.all? { |count| count == PolicyOcr::DIGITS_PER_LINE }
+        end
+      end
+
+      def character_alignment_error_message
+        message = "Line #{context.index + 1}: Lines must be divisible by #{PolicyOcr::DIGIT_WIDTH} characters " \
+                  "for proper digit parsing"
+        message += "\n#{format_offending_lines}"
+        message += "\n"
+        message
+      end
+
+      def digit_count_error_message
+        message = "Line #{context.index + 1}: All lines must have exactly #{PolicyOcr::DIGITS_PER_LINE} digits"
+        message += "\n#{format_offending_lines}"
+        message += "\n"
+        message
+      end
+
+      def format_offending_lines
+        lines_with_info = context.number_line.map.with_index do |line, idx|
+          char_count = line.length
+          digit_count = char_count / PolicyOcr::DIGIT_WIDTH
+          "  #{idx + 1}: \"#{line}\" (#{char_count} chars, #{digit_count} digits)"
+        end
+        lines_with_info.join("\n")
+      end
+
       def handle_parsing_error(error)
-        logger.error("Failed to parse policy number at line #{index}: #{error.message}")
+        logger.error("Failed to parse policy number at line #{index + 1}: #{error.message}")
         context.policy_number = PolicyOcr::Policy::Number::Unparseable.new
-        context.fail!(error: "Malformed number line at #{index}: #{error.message} #{error.backtrace.first}")
+        error_message = "Line #{index + 1}: #{error.message}\n#{format_offending_lines}\n"
+        context.fail!(error: error_message)
       end
 
       # digital_ints creates an array of DigitalInt objects from the matching digit patterns.

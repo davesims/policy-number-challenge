@@ -45,6 +45,90 @@ RSpec.describe PolicyOcr::Cli do
     end
   end
 
+  describe "#generate_policy_numbers" do
+    subject(:generate_output) { `./policy_ocr generate_policy_numbers #{options}` }
+
+    let(:exit_code) { $CHILD_STATUS.exitstatus }
+
+    context "with unparseable_count option" do
+      let(:options) { "--valid-count=1 --invalid-digits-count=1 --invalid-checksum-count=1 --unparseable-count=2" }
+
+      it "generates mixed policy number types including unparseable" do
+        expect(generate_output).not_to be_empty
+        expect(exit_code).to eq(0)
+
+        lines = generate_output.split("\n")
+        # Should be at least 12 lines (4 policies * 3 lines each) plus separators
+        expect(lines.length).to be >= 15
+
+        # Should have at least 3 blank separator lines
+        blank_lines = lines.count(&:empty?)
+        expect(blank_lines).to be >= 3
+
+        # At least some lines should be unparseable (not exactly 27 characters)
+        content_lines = lines.reject(&:empty?)
+        line_lengths = content_lines.map(&:length)
+        expect(line_lengths).to include(satisfy { |length| length != 27 })
+      end
+    end
+
+    context "with only unparseable_count" do
+      let(:options) { "--valid-count=0 --invalid-digits-count=0 --invalid-checksum-count=0 --unparseable-count=3" }
+
+      it "generates only unparseable patterns" do
+        expect(generate_output).not_to be_empty
+        expect(exit_code).to eq(0)
+
+        lines = generate_output.split("\n")
+        # Should have at least some content lines
+        expect(lines.length).to be >= 6
+
+        # Should have at least 2 blank separator lines
+        blank_lines = lines.count(&:empty?)
+        expect(blank_lines).to be >= 2
+
+        # At least some lines should be unparseable (not exactly 27 characters)
+        content_lines = lines.reject(&:empty?)
+        line_lengths = content_lines.map(&:length)
+        expect(line_lengths).to include(satisfy { |length| length != 27 })
+      end
+    end
+
+    context "with zero unparseable_count" do
+      let(:options) { "--valid-count=2 --invalid-digits-count=0 --invalid-checksum-count=0 --unparseable-count=0" }
+
+      it "generates no unparseable patterns" do
+        expect(generate_output).not_to be_empty
+        expect(exit_code).to eq(0)
+
+        lines = generate_output.split("\n")
+        content_lines = lines.reject(&:empty?)
+
+        # All content lines should be exactly 27 characters (parseable)
+        line_lengths = content_lines.map(&:length)
+        expect(line_lengths.all? { |length| length == 27 }).to be true
+      end
+    end
+
+    context "with default options" do
+      let(:options) { "" }
+
+      it "uses default counts including zero unparseable" do
+        expect(generate_output).not_to be_empty
+        expect(exit_code).to eq(0)
+
+        # Default is valid_count=20, invalid_digits_count=6, invalid_checksum_count=4, unparseable_count=0
+        # Total: 30 policy numbers
+        lines = generate_output.split("\n")
+        expect(lines.length).to be >= 90 # At least 30 policies * 3 lines each
+
+        # Should have 29 blank separator lines
+        blank_lines = lines.count(&:empty?)
+        expect(blank_lines).to eq(29)
+      end
+    end
+  end
+
   describe "error handling scenarios" do
     context "when file does not exist" do
       let(:file_path) { "nonexistent_file.txt" }
@@ -67,9 +151,10 @@ RSpec.describe PolicyOcr::Cli do
       let(:file_path) { "spec/fixtures/malformed_content.txt" }
 
       it "handles files with incorrect line counts" do
-        expect(cli_output).to include("Malformed number line at 3: element size differs (7 should be 10)")
-        expect(cli_output).to include("Malformed number line at 3: element size differs (7 should be 10)")
-        expect(cli_output).to include("Malformed number line")
+        expect(cli_output).to include("Line 4: Lines must be divisible by 3 characters for proper digit parsing")
+        expect(cli_output).to include("This is not valid OCR content")
+        expect(cli_output).to include("Just some random text")
+        expect(cli_output).to include("That should not parse correctly")
       end
     end
   end

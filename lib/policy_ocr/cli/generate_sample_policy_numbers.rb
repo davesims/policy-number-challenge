@@ -13,7 +13,8 @@ module PolicyOcr
     DEFAULT_UNPARSEABLE_COUNT = 0
 
     # Generates a collection of sample policy numbers for testing purposes.
-    # Creates a mix of valid numbers, numbers with invalid digits, numbers with checksum errors, and unparseable patterns.
+    # Creates a mix of valid numbers, numbers with invalid digits, numbers with checksum errors, and unparseable
+    # patterns.
     #
     # @param context [Interactor::Context] accepts optional parameters:
     #   - valid_count: number of valid policy numbers to generate (default: 20)
@@ -26,7 +27,9 @@ module PolicyOcr
                        Array.new(invalid_digits_count) do
                          PolicyOcr::Policy::Number.new(generate_invalid_digits_number)
                        end +
-                       Array.new(invalid_checksum_count) { PolicyOcr::Policy::Number.new(generate_invalid_checksum_number) } +
+                       Array.new(invalid_checksum_count) do
+                         PolicyOcr::Policy::Number.new(generate_invalid_checksum_number)
+                       end +
                        Array.new(unparseable_count) { PolicyOcr::Policy::Number::Unparseable.new(generate_unparseable_lines) }
 
       policy_numbers.shuffle.each(&:print_pattern)
@@ -129,14 +132,14 @@ module PolicyOcr
       unparseable_patterns = [
         # Lines with lengths that break the 3-char grouping (not multiples of 3)
         ["X", "ABCDEFGHIJKLMNOPQRSTUVWXYZ1", "ABCDEFGHIJKLMNOPQRSTUVWXYZ2"],  # 1, 27, 27 chars
-        ["AB", "ABCDEFGHIJKLMNOPQRSTUVWXYZ1", "ABCDEFGHIJKLMNOPQRSTUVWXYZ2"], # 2, 27, 27 chars  
+        ["AB", "ABCDEFGHIJKLMNOPQRSTUVWXYZ1", "ABCDEFGHIJKLMNOPQRSTUVWXYZ2"], # 2, 27, 27 chars
         ["ABCD", "ABCDEFGHIJKLMNOPQRSTUVWXYZ1", "ABCDEFGHIJKLMNOPQRSTUVWXYZ2"], # 4, 27, 27 chars
         # Empty lines mixed with normal lines
         ["", "ABCDEFGHIJKLMNOPQRSTUVWXYZ1", "ABCDEFGHIJKLMNOPQRSTUVWXYZ2"], # 0, 27, 27 chars
         # Lines with completely different lengths
         ["SHORT", "MEDIUM_LENGTH_LINE_HERE", "THIS_IS_A_VERY_LONG_LINE_THAT_BREAKS_PARSING_EXPECTATIONS"]
       ]
-      
+
       unparseable_patterns.sample
     end
   end

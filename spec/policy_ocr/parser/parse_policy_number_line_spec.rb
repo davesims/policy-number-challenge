@@ -75,6 +75,48 @@ RSpec.describe PolicyOcr::Parser::ParsePolicyNumberLine do
       end
     end
 
+    context "with structural validation failures" do
+      context "when lines are not divisible by 3 characters" do
+        let(:context) { build(:policy_number_line_context, number_line: %w[X ABC DEFGH], index: 2) }
+
+        it "fails with character alignment error and shows offending lines" do
+          expect(result).to be_failure
+          expect(result.error).to include("Line 3: Lines must be divisible by 3 characters for proper digit parsing")
+          expect(result.error).to include('1: "X" (1 chars, 0 digits)')
+          expect(result.error).to include('2: "ABC" (3 chars, 1 digits)')
+          expect(result.error).to include('3: "DEFGH" (5 chars, 1 digits)')
+          expect(result.policy_number).to be_a(PolicyOcr::Policy::Number::Unparseable)
+        end
+      end
+
+      context "when lines don't have exactly 9 digits" do
+        let(:context) do
+          build(:policy_number_line_context,
+                number_line: ["", "ABCDEFGHIJKLMNOPQRSTUVWXYZ1", "ABCDEFGHIJKLMNOPQRSTUVWXYZ2"],
+                index: 5)
+        end
+
+        it "fails with digit count error and shows offending lines" do
+          expect(result).to be_failure
+          expect(result.error).to include("Line 6: All lines must have exactly 9 digits")
+          expect(result.error).to include('1: "" (0 chars, 0 digits)')
+          expect(result.error).to include('2: "ABCDEFGHIJKLMNOPQRSTUVWXYZ1" (27 chars, 9 digits)')
+          expect(result.error).to include('3: "ABCDEFGHIJKLMNOPQRSTUVWXYZ2" (27 chars, 9 digits)')
+          expect(result.policy_number).to be_a(PolicyOcr::Policy::Number::Unparseable)
+        end
+      end
+
+      context "when lines have mixed structural issues" do
+        let(:context) { build(:policy_number_line_context, number_line: %w[AB TOOLONG X], index: 0) }
+
+        it "fails with the first validation error encountered" do
+          expect(result).to be_failure
+          expect(result.error).to include("Line 1: Lines must be divisible by 3 characters")
+          expect(result.policy_number).to be_a(PolicyOcr::Policy::Number::Unparseable)
+        end
+      end
+    end
+
     context "when StandardError occurs during parsing" do
       context "when the line is malformed" do
         let(:malformed_line) { %w[invalid data here] }
@@ -83,7 +125,10 @@ RSpec.describe PolicyOcr::Parser::ParsePolicyNumberLine do
         it "returns Unparseable policy number and fails context" do
           expect(result).to be_failure
           expect(result.policy_number).to be_a(PolicyOcr::Policy::Number::Unparseable)
-          expect(result.error).to include("Malformed number line at #{index}")
+          expect(result.error).to include("Line 1:")
+          expect(result.error).to include('1: "invalid" (7 chars, 2 digits)')
+          expect(result.error).to include('2: "data" (4 chars, 1 digits)')
+          expect(result.error).to include('3: "here" (4 chars, 1 digits)')
         end
       end
 
@@ -94,7 +139,44 @@ RSpec.describe PolicyOcr::Parser::ParsePolicyNumberLine do
         it "handles errors gracefully" do
           expect(result).to be_failure
           expect(result.policy_number).to be_a(PolicyOcr::Policy::Number::Unparseable)
-          expect(result.error).to include("Malformed number line")
+          expect(result.error).to include("Line 2:")
+        end
+      end
+    end
+
+    describe "error formatting methods" do
+      let(:test_context) { build(:policy_number_line_context, number_line: %w[AB DEFGHIJKLM NO], index: 3) }
+      let(:instance) { described_class.new }
+
+      before do
+        # Initialize the interactor with the context using call_with_context helper
+        instance.instance_variable_set(:@context, test_context)
+      end
+
+      describe "#format_offending_lines" do
+        it "formats lines with character and digit counts" do
+          formatted = instance.send(:format_offending_lines)
+          expect(formatted).to include('1: "AB" (2 chars, 0 digits)')
+          expect(formatted).to include('2: "DEFGHIJKLM" (10 chars, 3 digits)')
+          expect(formatted).to include('3: "NO" (2 chars, 0 digits)')
+        end
+      end
+
+      describe "#character_alignment_error_message" do
+        it "includes line number and formatted offending lines" do
+          message = instance.send(:character_alignment_error_message)
+          expect(message).to include("Line 4: Lines must be divisible by 3 characters")
+          expect(message).to include('1: "AB" (2 chars, 0 digits)')
+          expect(message).to end_with("\n")
+        end
+      end
+
+      describe "#digit_count_error_message" do
+        it "includes line number and formatted offending lines" do
+          message = instance.send(:digit_count_error_message)
+          expect(message).to include("Line 4: All lines must have exactly 9 digits")
+          expect(message).to include('2: "DEFGHIJKLM" (10 chars, 3 digits)')
+          expect(message).to end_with("\n")
         end
       end
     end
