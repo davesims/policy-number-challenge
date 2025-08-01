@@ -25,30 +25,30 @@ RSpec.describe PolicyOcr::Parser::ParsePolicyNumberLine do
       context "when number_line is nil" do
         let(:context) { build(:policy_number_line_context, number_line: nil) }
 
-        it "fails and sets Invalid policy number" do
+        it "fails and sets Unparseable policy number" do
           expect(result).to be_failure
           expect(result.error).to eq("number_line is required")
-          expect(result.policy_number).to be_a(PolicyOcr::Policy::Number::Invalid)
+          expect(result.policy_number).to be_a(PolicyOcr::Policy::Number::Unparseable)
         end
       end
 
       context "when number_line is empty" do
         let(:context) { build(:policy_number_line_context, number_line: []) }
 
-        it "fails and sets Invalid policy number" do
+        it "fails and sets Unparseable policy number" do
           expect(result).to be_failure
           expect(result.error).to eq("number_line cannot be empty")
-          expect(result.policy_number).to be_a(PolicyOcr::Policy::Number::Invalid)
+          expect(result.policy_number).to be_a(PolicyOcr::Policy::Number::Unparseable)
         end
       end
 
       context "when number_line has wrong size" do
         let(:context) { build(:policy_number_line_context, number_line: %w[line1 line2], index:) }
 
-        it "fails and sets Invalid policy number" do
+        it "fails and sets Unparseable policy number" do
           expect(result).to be_failure
           expect(result.error).to eq("number_line must have exactly #{PolicyOcr::LINE_HEIGHT} elements")
-          expect(result.policy_number).to be_a(PolicyOcr::Policy::Number::Invalid)
+          expect(result.policy_number).to be_a(PolicyOcr::Policy::Number::Unparseable)
         end
       end
 
@@ -57,20 +57,20 @@ RSpec.describe PolicyOcr::Parser::ParsePolicyNumberLine do
           build(:policy_number_line_context, number_line: %w[line1 line2 line3 line4 line5], index:)
         end
 
-        it "fails and sets Invalid policy number" do
+        it "fails and sets Unparseable policy number" do
           expect(result).to be_failure
           expect(result.error).to eq("number_line must have exactly #{PolicyOcr::LINE_HEIGHT} elements")
-          expect(result.policy_number).to be_a(PolicyOcr::Policy::Number::Invalid)
+          expect(result.policy_number).to be_a(PolicyOcr::Policy::Number::Unparseable)
         end
       end
 
       context "when the index is missing" do
         let(:context) { build(:policy_number_line_context) }
 
-        it "fails and sets Invalid policy number" do
+        it "fails and sets Unparseable policy number" do
           expect(result).to be_failure
           expect(result.error).to eq("index is required")
-          expect(result.policy_number).to be_a(PolicyOcr::Policy::Number::Invalid)
+          expect(result.policy_number).to be_a(PolicyOcr::Policy::Number::Unparseable)
         end
       end
     end
@@ -80,9 +80,9 @@ RSpec.describe PolicyOcr::Parser::ParsePolicyNumberLine do
         let(:malformed_line) { %w[invalid data here] }
         let(:context) { build(:policy_number_line_context, number_line: malformed_line, index:) }
 
-        it "returns Invalid policy number and fails context" do
+        it "returns Unparseable policy number and fails context" do
           expect(result).to be_failure
-          expect(result.policy_number).to be_a(PolicyOcr::Policy::Number::Invalid)
+          expect(result.policy_number).to be_a(PolicyOcr::Policy::Number::Unparseable)
           expect(result.error).to include("Malformed number line at #{index}")
         end
       end
@@ -93,7 +93,7 @@ RSpec.describe PolicyOcr::Parser::ParsePolicyNumberLine do
 
         it "handles errors gracefully" do
           expect(result).to be_failure
-          expect(result.policy_number).to be_a(PolicyOcr::Policy::Number::Invalid)
+          expect(result.policy_number).to be_a(PolicyOcr::Policy::Number::Unparseable)
           expect(result.error).to include("Malformed number line")
         end
       end

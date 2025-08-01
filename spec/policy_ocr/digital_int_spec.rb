@@ -3,7 +3,8 @@
 require "spec_helper"
 
 RSpec.describe PolicyOcr::DigitalInt do
-  let(:pattern) do 
+  # rubocop:disable Metrics/MethodLength, Style/StringConcatenation, Style/LineEndConcatenation, Layout/MultilineOperationIndentation
+  let(:pattern) do
     " _ " +
     "| |" +
     "|_|"
@@ -54,6 +55,8 @@ RSpec.describe PolicyOcr::DigitalInt do
                                      " _|"
     }
   end
+
+  # rubocop:enable Metrics/MethodLength, Style/StringConcatenation, Style/LineEndConcatenation, Layout/MultilineOperationIndentation
 
   describe ".all_numbers" do
     it "returns all digit classes" do

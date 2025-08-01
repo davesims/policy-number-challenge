@@ -85,8 +85,9 @@ module PolicyOcr
       puts "📈 PARSING STATISTICS:"
       puts "  Total Lines Parsed: #{doc.total_count}"
       puts "  ✅ Valid Numbers: #{doc.valid_count}"
-      puts "  ❌ Checksum Errors (ERR): #{doc.err_count}"
+      puts "  ❌ Invalid Checksum (ERR): #{doc.err_count}"
       puts "  ❓ Invalid Digits (ILL): #{doc.ill_count}"
+      puts "  🚫 Unparseable (ILL): #{doc.unparseable_count}"
     end
 
     def display_parser_errors

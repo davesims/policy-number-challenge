@@ -49,7 +49,8 @@ RSpec.describe PolicyOcr::Cli::PrintReport do
     subject(:output) { capture_stdout { described_class.call({ result:, input_file:, output_file: }) } }
 
     before do
-      allow(policy_document).to receive_messages(total_count: 10, valid_count: 7, err_count: 2, ill_count: 1)
+      allow(policy_document).to receive_messages(total_count: 10, valid_count: 7, err_count: 2, ill_count: 1,
+                                                 unparseable_count: 0)
     end
 
     it "displays success header" do
@@ -84,7 +85,7 @@ RSpec.describe PolicyOcr::Cli::PrintReport do
       end
 
       it "displays checksum errors count" do
-        expect(output).to include("❌ Checksum Errors (ERR): 2")
+        expect(output).to include("❌ Invalid Checksum (ERR): 2")
       end
 
       it "displays invalid digits count" do

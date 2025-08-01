@@ -36,9 +36,17 @@ module PolicyOcr
     end
 
     desc "generate_policy_numbers", "Generate test policy numbers in ASCII digital format"
+    option :valid_count, type: :numeric, default: 20, desc: "Number of valid policy numbers to generate (default: 20)"
+    option :invalid_digits_count, type: :numeric, default: 6,
+                                  desc: "Number of policy numbers with invalid digits (default: 6)"
+    option :invalid_checksum_count, type: :numeric, default: 4,
+                                    desc: "Number of policy numbers with checksum errors (default: 4)"
     def generate_policy_numbers
-      result = PolicyOcr::Cli::GenerateSamplePolicyNumbers.call
-      puts result.generated_numbers
+      PolicyOcr::Cli::GenerateSamplePolicyNumbers.call(
+        valid_count: options[:valid_count],
+        invalid_digits_count: options[:invalid_digits_count],
+        invalid_checksum_count: options[:invalid_checksum_count]
+      )
     end
   end
 end

@@ -8,11 +8,26 @@ RSpec.describe PolicyOcr::Policy::Document do
     PolicyOcr::Policy::Number.new(digital_ints)
   end
 
-  let(:invalid_number) { PolicyOcr::Policy::Number::Invalid.new }
+  let(:invalid_number) { PolicyOcr::Policy::Number::Unparseable.new }
 
   let(:checksum_error_number) do
     invalid_digital_ints = [1, 1, 1, 1, 1, 1, 1, 1, 1].map { |d| PolicyOcr::DigitalInt.from_int(d) }
     PolicyOcr::Policy::Number.new(invalid_digital_ints)
+  end
+
+  let(:invalid_digits_number) do
+    digital_ints = [
+      PolicyOcr::DigitalInt.from_int(1),
+      PolicyOcr::DigitalInt::Invalid.new(pattern: "???"),
+      PolicyOcr::DigitalInt.from_int(3),
+      PolicyOcr::DigitalInt.from_int(4),
+      PolicyOcr::DigitalInt.from_int(5),
+      PolicyOcr::DigitalInt.from_int(6),
+      PolicyOcr::DigitalInt.from_int(7),
+      PolicyOcr::DigitalInt.from_int(8),
+      PolicyOcr::DigitalInt.from_int(9)
+    ]
+    PolicyOcr::Policy::Number.new(digital_ints)
   end
 
   describe "#initialize" do
@@ -93,12 +108,12 @@ RSpec.describe PolicyOcr::Policy::Document do
   end
 
   describe "statistics methods" do
-    let(:policy_numbers) { [valid_number, checksum_error_number, invalid_number] }
+    let(:policy_numbers) { [valid_number, checksum_error_number, invalid_digits_number, invalid_number] }
     let(:document) { described_class.new(policy_numbers) }
 
     describe "#total_count" do
       it "returns the total number of policy numbers" do
-        expect(document.total_count).to eq(3)
+        expect(document.total_count).to eq(4)
       end
     end
 

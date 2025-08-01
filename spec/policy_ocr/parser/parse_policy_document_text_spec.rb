@@ -67,7 +67,7 @@ RSpec.describe PolicyOcr::Parser::ParsePolicyDocumentText do
         end
 
         it "marks incomplete group as invalid" do
-          expect(result.policy_numbers.last).to be_a(PolicyOcr::Policy::Number::Invalid)
+          expect(result.policy_numbers.last).to be_a(PolicyOcr::Policy::Number::Unparseable)
         end
 
         it "records parser errors for incomplete groups" do

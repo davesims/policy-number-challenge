@@ -12,9 +12,9 @@ module PolicyOcr
       end
 
       on_validation_failed do
-        # Set an Invalid policy number in the context if validation fails, so that there is
+        # Set an Unparseable policy number in the context if validation fails, so that there is
         # no nil policy_number in the context.
-        context.policy_number = PolicyOcr::Policy::Number::Invalid.new
+        context.policy_number = PolicyOcr::Policy::Number::Unparseable.new
       end
 
       # Parses a PolicyOcr::LINE_HEIGHT-length array representing a single policy number.
@@ -40,7 +40,7 @@ module PolicyOcr
 
       def handle_parsing_error(error)
         logger.error("Failed to parse policy number at line #{index}: #{error.message}")
-        context.policy_number = PolicyOcr::Policy::Number::Invalid.new
+        context.policy_number = PolicyOcr::Policy::Number::Unparseable.new
         context.fail!(error: "Malformed number line at #{index}: #{error.message} #{error.backtrace.first}")
       end
 

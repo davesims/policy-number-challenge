@@ -201,7 +201,7 @@ RSpec.describe PolicyOcr::Policy::Number do
     end
   end
 
-  describe PolicyOcr::Policy::Number::Invalid do
+  describe PolicyOcr::Policy::Number::Unparseable do
     let(:invalid_number) { described_class.new }
 
     describe "#initialize" do
@@ -210,10 +210,10 @@ RSpec.describe PolicyOcr::Policy::Number do
         expect(invalid_number.digital_ints.all? { |d| d.is_a?(PolicyOcr::DigitalInt::Invalid) }).to be true
       end
 
-      it "uses --- pattern for invalid digits" do
+      it "uses ??? pattern for invalid digits" do
         pattern = invalid_number.digital_ints.first.pattern
 
-        expect(pattern).to eq("---")
+        expect(pattern).to eq("???")
       end
     end
 

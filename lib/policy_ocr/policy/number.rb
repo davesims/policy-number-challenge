@@ -52,11 +52,19 @@ module PolicyOcr
         !all_digits_valid?
       end
 
-      class Invalid < Number
-        def initialize
-          digital_ints = Array.new(9, PolicyOcr::DigitalInt::Invalid.new(pattern: "---"))
-          super(digital_ints)
-        end
+      def parseable?
+        true
+      end
+
+      def unparseable?
+        false
+      end
+
+      def print_pattern
+        patterns = digital_ints.map(&:pattern)
+        lines = patterns.map { |p| p.scan(/.{3}/) }.transpose
+        lines.each { |line| puts line.join }
+        puts # Add blank separator line
       end
     end
   end

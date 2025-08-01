@@ -27,7 +27,11 @@ module PolicyOcr
       end
 
       def ill_count
-        policy_numbers.count(&:invalid_digits?)
+        policy_numbers.count { |n| n.invalid_digits? && !n.unparseable? }
+      end
+
+      def unparseable_count
+        policy_numbers.count(&:unparseable?)
       end
     end
   end
