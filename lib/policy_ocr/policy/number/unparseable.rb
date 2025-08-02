@@ -16,6 +16,7 @@ module PolicyOcr
           true
         end
 
+        # Just print the lines as they were provided. This is mostly used for error report output.
         def print_pattern
           puts number_lines.join(PolicyOcr::CARRIAGE_RETURN)
           puts # Add blank separator line
@@ -23,6 +24,7 @@ module PolicyOcr
 
         private
 
+        # If no number_lines are provided, generate some default unparseable lines.
         def generate_default_unparseable_lines
           3.times.map { "?" * 27 }
         end
