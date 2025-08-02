@@ -69,29 +69,41 @@ cat parsed_files/sample_parsed.txt
 
 #### Generate Policy Numbers (test data):
 
-The `generate_policy_numbers` command creates ASCII test data containing randomized 9-digit policy numbers in the 3-line format expected by the OCR parser. This includes a mix of valid numbers, numbers with checksum errors, and numbers with invalid digit patterns for comprehensive testing.
+The `generate_policy_numbers` command creates ASCII test data containing randomized 9-digit policy numbers in the 3-line format expected by the OCR parser. This includes a mix of valid numbers, numbers with checksum errors, numbers with invalid digit patterns, and unparseable patterns for comprehensive testing.
 
 Syntax
 
 ```bash
-./policy_ocr generate_policy_numbers > <output_file>
+./policy_ocr generate_policy_numbers [options] > <output_file>
 ```
+
+Options:
+- `--valid-count=N` - Number of valid policy numbers to generate (default: 20)
+- `--invalid-digits-count=N` - Number of policy numbers with invalid digits (default: 6)
+- `--invalid-checksum-count=N` - Number of policy numbers with checksum errors (default: 4)
+- `--unparseable-count=N` - Number of unparseable patterns to generate (default: 0)
 
 Example
 
 ```bash
+# Generate with default distribution
 ./policy_ocr generate_policy_numbers > test_data.txt
+
+# Generate custom distribution
+./policy_ocr generate_policy_numbers --valid-count=10 --invalid-digits-count=5 --invalid-checksum-count=3 --unparseable-count=2 > test_data.txt
+
+# Parse the generated file
 ./policy_ocr parse test_data.txt
 ```
 
 #### Output Files
 
-Parsed results are written to the `/parsed_files` directory as plain text files named `<filename>_parsed.txt`. Each line contains either a valid 9-digit policy number followed by a space, or the number followed by ` ERR` (checksum error) or ` ILL` (invalid digits).
+Parsed results are written to the `/parsed_files` directory as plain text files named `<filename>_parsed.txt`. Each line contains either a valid 9-digit policy number followed by a space, or the number followed by ` ERR` (checksum error) or ` ILL` (invalid/unparseable digits).
 
 ```
 000000000 
 123456789 ERR
-111111111 ILL
+86110??36 ILL
 ```
 
 #### Logs
@@ -126,8 +138,9 @@ cat log/sample_parsed.log
 📈 PARSING STATISTICS:
   Total Lines Parsed: 30
   ✅ Valid Numbers: 20
-  ❌ Checksum Errors (ERR): 4
+  ❌ Invalid Checksum (ERR): 4
   ❓ Invalid Digits (ILL): 6
+  🚫 Unparseable (ILL): 0
 
 ✨ Parsing completed successfully!
 ============================================================
@@ -149,11 +162,15 @@ cat log/sample_parsed.log
 📈 PARSING STATISTICS:
   Total Lines Parsed: 4
   ✅ Valid Numbers: 1
-  ❌ Checksum Errors (ERR): 2
-  ❓ Invalid Digits (ILL): 1
+  ❌ Invalid Checksum (ERR): 2
+  ❓ Invalid Digits (ILL): 0
+  🚫 Unparseable (ILL): 1
 
 ⚠️  PARSER ERRORS ENCOUNTERED:
-  1. Malformed number line at 3: element size differs (7 should be 10)
+  1. Line 4: Lines must be divisible by 3 characters for proper digit parsing
+  This is not valid OCR content
+  Just some random text
+  That should not parse correctly
 
 ✨ Parsing completed successfully!
 ============================================================
@@ -186,7 +203,7 @@ This application uses the [Interactor gem from CollectiveIdea](https://github.co
 #### Policy Classes (`lib/policy_ocr/policy/`)
 - **Document**: Represents a collection of policy numbers from a document
 - **Number**: Represents a single policy number with validation and formatting
-- **Number::Invalid**: Subclass for handling unparseable policy numbers
+- **Number::Unparseable**: Subclass for handling unparseable policy numbers
 
 #### Parser Classes (`lib/policy_ocr/parser/`)
 - **ParsePolicyDocumentFile**: Reads and processes policy document files
