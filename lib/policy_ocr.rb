@@ -62,7 +62,7 @@ require_relative "policy_ocr/digital_int"
 
 # Load policy namespace files
 require_relative "policy_ocr/policy/number"
-require_relative "policy_ocr/policy/unparseable"
+require_relative "policy_ocr/policy/number/unparseable"
 require_relative "policy_ocr/policy/document"
 
 # Load parse namespace files
