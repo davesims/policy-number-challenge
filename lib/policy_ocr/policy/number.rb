@@ -52,10 +52,6 @@ module PolicyOcr
         !all_digits_valid?
       end
 
-      def parseable?
-        true
-      end
-
       def unparseable?
         false
       end
