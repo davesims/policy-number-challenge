@@ -140,7 +140,7 @@ cat log/sample_parsed.log
   ✅ Valid Numbers: 20
   ❌ Invalid Checksum (ERR): 4
   ❓ Invalid Digits (ILL): 6
-  🚫 Unparseable (ILL): 0
+  🚫 Unparseable: 0
 
 ✨ Parsing completed successfully!
 ============================================================
@@ -164,7 +164,7 @@ cat log/sample_parsed.log
   ✅ Valid Numbers: 1
   ❌ Invalid Checksum (ERR): 2
   ❓ Invalid Digits (ILL): 0
-  🚫 Unparseable (ILL): 1
+  🚫 Unparseable: 1
 
 ⚠️  PARSER ERRORS ENCOUNTERED:
   1. Line 4: Lines must be divisible by 3 characters for proper digit parsing
