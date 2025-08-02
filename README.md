@@ -248,43 +248,46 @@ The final output structure of a parsed document has the following class organiza
 
 ### Parsing Workflow
 
-This is the general sequence of parsing, starting with the ParsePolicyDocumentFile, which reads the file contents and passes the raw text to the ParsePolicyDocumentText interactor.
-ParsePolicyNumberLine creates an array of numbers, and that array is used to create the final Policy::Document. 
+This is the general sequence of parsing, starting with the `ParsePolicyDocumentFile`, which reads the file contents and passes the raw text to the `ParsePolicyDocumentText` interactor.
+`ParsePolicyNumberLine` creates an array of `Policy::Numbers`, which create an array of DigitalInts using their associated ASCII pattern. 
+The array of `Policy::Numbers` is used to create the final `Policy::Document`. 
 
 ```
-┌─────────────────────────┐     ┌─────────────────────────┐     ┌───────────────────────┐    ┌─────────────────────┐
-│                         │     │                         │     │                       │    │                     │
-│                         │     │                         │     │                       │    │                     │
-│ ParsePolicyDocumentFile │     │ ParsePolicyDocumentText │     │ ParsePolicyNumberLine │    │   Policy::Number    │
-│                         │     │                         │     │                       │    │                     │
-│                         │     │                         │     │                       │    │                     │
-└────────────┬────────────┘     └────────────┬────────────┘     └───────────┬───────────┘    └──────────┬──────────┘
-             │                               │                              │                           │           
-             │                               │                              │                           │           
-             │           raw_text            │                              │                           │           
-             ├──────────────────────────────▶│                              │                           │           
-             │                               │        number_line           │                           │           
-             │                               │─────────────────────────────▶│                           │           
-             │                               │                              │         create            │           
-             │                               │                              ├──────────────────────────▶│           
-             │                               │                              │                           │           
-             │                               │                              │                           │           
-             │                               │                              │                           │           
-             │                               │                              │      Policy::Number       │           
-             │                               │                              │◀──────────────────────────│           
-             │                               │       Policy::Number         │                           │           
-             │                               │◀─────────────────────────────│                           │           
-             │        Policy::Document       │                              │                           │           
-             │◀──────────────────────────────│                              │                           │           
-             │                               │                              │                           │           
-             │                               │                              │                           │           
-             │                               │                              │                           │           
+┌─────────────────────────┐     ┌─────────────────────────┐     ┌───────────────────────┐    ┌─────────────────────┐    ┌─────────────────────┐   
+│                         │     │                         │     │                       │    │                     │    │                     │   
+│                         │     │                         │     │                       │    │                     │    │                     │   
+│ ParsePolicyDocumentFile │     │ ParsePolicyDocumentText │     │ ParsePolicyNumberLine │    │   Policy::Number    │    │     DigitalInt      │   
+│                         │     │                         │     │                       │    │                     │    │                     │   
+│                         │     │                         │     │                       │    │                     │    │                     │   
+└────────────┬────────────┘     └────────────┬────────────┘     └───────────┬───────────┘    └──────────┬──────────┘    └──────────┬──────────┘   
+             │                               │                              │                           │                          │              
+             │                               │                              │                           │                          │              
+             │           raw_text            │                              │                           │                          │              
+             ├──────────────────────────────▶│                              │                           │                          │              
+             │                               │        number_line           │                           │                          │              
+             │                               │─────────────────────────────▶│                           │                          │              
+             │                               │                              │         create            │                          │              
+             │                               │                              ├──────────────────────────▶│                          │              
+             │                               │                              │                           │       from_pattern       │                                                                                             
+             │                               │                              │                           │─────────────────────────▶│                                                                                            
+             │                               │                              │                           │                          │              
+             │                               │                              │                           │        DigitalInt        │                                                                      
+             │                               │                              │                           │◀─────────────────────────│                                                                    
+             │                               │                              │      Policy::Number       │                          │
+             │                               │       Policy::Number         │◀──────────────────────────│                          │
+             │        Policy::Document       │◀─────────────────────────────│                           │                          │              
+             │◀──────────────────────────────│                              │                           │                          │              
+             │                               │                              │                           │                          │              
+             │                               │                              │                           │                          │              
+             │                               │                              │                           │                          │              
 
 ```
 
-### CLI Interface Workflow
+### CLI `parse` Interface Workflow
 
-The command-line interface orchestrates the parsing workflow through interactors:
+The command-line interface for parsing documents orchestrates the workflow through interactors. The filename given on the command line is passed to the `ParsePolicyDocumentFile` interactor
+for parsing. The resulting `Policy::Document` is passed back on the result, and the output file is written to the parsed_files directory. The statistics of the parse action are then printed to 
+`stdout` by the `PrintReport` interactor:
 
 ```
 ┌─────────────────┐    ┌─────────────────────────┐     ┌─────────────────┐       ┌─────────────────┐
@@ -294,21 +297,21 @@ The command-line interface orchestrates the parsing workflow through interactors
 └────────┬────────┘    └────────────┬────────────┘     └────────┬────────┘       └────────┬────────┘
          │                          │                           │                         │         
          │                          │                           │                         │         
-         │           call           │                           │                         │         
+         │      call(filename)      │                           │                         │         
          │─────────────────────────▶│                           │                         │         
          │                          │                           │                         │         
-         │           result         │                           │                         │         
+         │      result(document)    │                           │                         │         
          │◀─────────────────────────┤                           │                         │         
          │                          │                           │                         │         
          │                          │                           │                         │         
-         │                          │    call                   │                         │         
+         │                          │    call(document)         │                         │         
          │──────────────────────────┼──────────────────────────▶│                         │         
          │                          │                           │                         │         
-         │                          │   result                  │                         │         
+         │                          │      result               │                         │         
          │◀─────────────────────────┼───────────────────────────│                         │         
          │                          │                           │                         │         
          │                          │                           │                         │         
-         │                          │            call           │                         │         
+         │                          │       call(document)      │                         │         
          │──────────────────────────┼───────────────────────────┼────────────────────────▶│         
          │                          │                           │                         │         
          │                          │                           │                         │         

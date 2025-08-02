@@ -92,8 +92,24 @@ RSpec.describe PolicyOcr::Cli::PrintReport do
         expect(output).to include("❓ Invalid Digits (ILL): 1")
       end
 
+      it "displays unparseable count" do
+        expect(output).to include("🚫 Unparseable: 0")
+      end
+
       it "displays success footer" do
         expect(output).to include(/✨ Parsing completed successfully!/)
+      end
+    end
+
+    context "with non-zero unparseable count" do
+      before do
+        allow(policy_document).to receive_messages(total_count: 5, valid_count: 2, err_count: 1, ill_count: 1,
+                                                   unparseable_count: 1)
+      end
+
+      it "displays unparseable count without ILL label" do
+        expect(output).to include("🚫 Unparseable: 1")
+        expect(output).not_to include("🚫 Unparseable (ILL)")
       end
     end
 
