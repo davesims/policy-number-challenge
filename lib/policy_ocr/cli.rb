@@ -18,18 +18,19 @@ module PolicyOcr
       PolicyOcr.setup_logging_for_file(file_path)
       result = PolicyOcr::Parser::ParsePolicyDocumentFile.call(file_path:)
 
-      if result.failure?
+      if result.success?
+        write_result = PolicyOcr::Cli::WriteOutputFile.call(
+          content: result.policy_document.to_s,
+          input_file: file_path
+        )
+        output_file = write_result.output_file if write_result.success?
+      else
         PolicyOcr::Cli::PrintReport.call(result:, input_file: file_path, output_file: nil)
         exit 1
       end
 
-      write_result = PolicyOcr::Cli::WriteOutputFile.call(
-        content: result.policy_document.to_s,
-        input_file: file_path
-      )
-      output_file = write_result.output_file if write_result.success?
-
       PolicyOcr::Cli::PrintReport.call(result:, input_file: file_path, output_file:)
+
     rescue StandardError => e
       puts "Error parsing file: #{e.message}"
       exit 1
