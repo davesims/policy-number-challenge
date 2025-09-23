@@ -10,7 +10,10 @@ module PolicyOcr
       end
 
       def to_s
-        policy_numbers.map(&:to_s).join(PolicyOcr::CARRIAGE_RETURN)
+        return "" if policy_numbers.empty?
+
+        # Join policy numbers with carriage return and add a trailing carriage return (POSIX standard)
+        policy_numbers.map(&:to_s).join(PolicyOcr::CARRIAGE_RETURN) + PolicyOcr::CARRIAGE_RETURN
       end
 
       # Statistics methods
@@ -27,7 +30,7 @@ module PolicyOcr
       end
 
       def ill_count
-        policy_numbers.count { |n| n.invalid_digits? && !n.unparseable? }
+        policy_numbers.count(&:ill?)
       end
 
       def unparseable_count

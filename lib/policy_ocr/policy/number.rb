@@ -48,6 +48,10 @@ module PolicyOcr
         all_digits_valid? && !checksum_valid?
       end
 
+      def ill?
+        invalid_digits? && unparseable?
+      end
+
       def invalid_digits?
         !all_digits_valid?
       end

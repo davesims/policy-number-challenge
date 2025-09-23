@@ -30,7 +30,6 @@ module PolicyOcr
       end
 
       PolicyOcr::Cli::PrintReport.call(result:, input_file: file_path, output_file:)
-
     rescue StandardError => e
       puts "Error parsing file: #{e.message}"
       exit 1

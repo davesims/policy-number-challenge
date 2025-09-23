@@ -56,7 +56,7 @@ RSpec.describe PolicyOcr::Policy::Document do
       let(:document) { described_class.new(policy_numbers) }
 
       it "returns the policy number as string" do
-        expect(document.to_s).to eq("711111111 ")
+        expect(document.to_s).to eq("711111111 \n")
       end
     end
 
@@ -65,7 +65,7 @@ RSpec.describe PolicyOcr::Policy::Document do
       let(:document) { described_class.new(policy_numbers) }
 
       it "returns the policy numbers array" do
-        expected_output = ["711111111 ", "111111111 ERR", "????????? ILL"].join("\n")
+        expected_output = ["711111111 ", "111111111 ERR", "????????? ILL"].join("\n") + "\n"
         expect(document.to_s).to eq(expected_output)
       end
     end
@@ -84,7 +84,7 @@ RSpec.describe PolicyOcr::Policy::Document do
       let(:document) { described_class.new(policy_numbers) }
 
       it "preserves the order and formatting" do
-        expected_output = ["????????? ILL", "711111111 "].join("\n")
+        expected_output = ["????????? ILL", "711111111 "].join("\n") + "\n"
         expect(document.to_s).to eq(expected_output)
       end
     end
