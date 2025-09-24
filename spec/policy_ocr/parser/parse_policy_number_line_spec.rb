@@ -79,9 +79,10 @@ RSpec.describe PolicyOcr::Parser::ParsePolicyNumberLine do
       context "when lines are not divisible by 3 characters" do
         let(:context) { build(:policy_number_line_context, number_line: %w[X ABC DEFGH], index: 2) }
 
-        it "fails with character alignment error and shows offending lines" do
+        it "fails with line length error and shows offending lines" do
           expect(result).to be_failure
-          expect(result.error).to include("Line 3: Lines must be divisible by 3 characters for proper digit parsing")
+          expect(result.error).to include("Line 3: Each line must be exactly 27 characters")
+          expect(result.error).to include("9 digits × 3 characters per digit")
           expect(result.error).to include("  X")
           expect(result.error).to include("  ABC")
           expect(result.error).to include("  DEFGH")
@@ -96,9 +97,10 @@ RSpec.describe PolicyOcr::Parser::ParsePolicyNumberLine do
                 index: 5)
         end
 
-        it "fails with digit count error and shows offending lines" do
+        it "fails with line length error and shows offending lines" do
           expect(result).to be_failure
-          expect(result.error).to include("Line 6: All lines must have exactly 9 digits")
+          expect(result.error).to include("Line 6: Each line must be exactly 27 characters")
+          expect(result.error).to include("9 digits × 3 characters per digit")
           expect(result.error).to include("  ") # empty line with spaces
           expect(result.error).to include("  ABCDEFGHIJKLMNOPQRSTUVWXYZ1")
           expect(result.error).to include("  ABCDEFGHIJKLMNOPQRSTUVWXYZ2")
@@ -109,9 +111,9 @@ RSpec.describe PolicyOcr::Parser::ParsePolicyNumberLine do
       context "when lines have mixed structural issues" do
         let(:context) { build(:policy_number_line_context, number_line: %w[AB TOOLONG X], index: 0) }
 
-        it "fails with the first validation error encountered" do
+        it "fails with line length validation error" do
           expect(result).to be_failure
-          expect(result.error).to include("Line 1: Lines must be divisible by 3 characters")
+          expect(result.error).to include("Line 1: Each line must be exactly 27 characters")
           expect(result.policy_number).to be_a(PolicyOcr::Policy::Number::Unparseable)
         end
       end
@@ -162,19 +164,12 @@ RSpec.describe PolicyOcr::Parser::ParsePolicyNumberLine do
         end
       end
 
-      describe "#character_alignment_error_message" do
+      describe "#line_length_error_message" do
         it "includes line number and formatted offending lines" do
-          message = instance.send(:character_alignment_error_message)
-          expect(message).to include("Line 4: Lines must be divisible by 3 characters")
+          message = instance.send(:line_length_error_message, 27)
+          expect(message).to include("Line 4: Each line must be exactly 27 characters")
+          expect(message).to include("9 digits × 3 characters per digit")
           expect(message).to include("  AB")
-          expect(message).to end_with("\n")
-        end
-      end
-
-      describe "#digit_count_error_message" do
-        it "includes line number and formatted offending lines" do
-          message = instance.send(:digit_count_error_message)
-          expect(message).to include("Line 4: All lines must have exactly 9 digits")
           expect(message).to include("  DEFGHIJKLM")
           expect(message).to end_with("\n")
         end

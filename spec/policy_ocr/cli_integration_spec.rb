@@ -151,7 +151,7 @@ RSpec.describe PolicyOcr::Cli do
       let(:file_path) { "spec/fixtures/malformed_content.txt" }
 
       it "handles files with incorrect line counts" do
-        expect(cli_output).to include("Line 4: Lines must be divisible by 3 characters for proper digit parsing")
+        expect(cli_output).to include("Line 4: Each line must be exactly 27 characters")
         expect(cli_output).to include("This is not valid OCR content")
         expect(cli_output).to include("Just some random text")
         expect(cli_output).to include("That should not parse correctly")

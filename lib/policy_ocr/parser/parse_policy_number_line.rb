@@ -40,27 +40,15 @@ module PolicyOcr
       private
 
       def validate_structure
-        # Use the validate method from Interactor::Validations to check structural integrity
-        validate(character_alignment_error_message) do
-          context.number_line.all? { |line| (line.length % PolicyOcr::DIGIT_WIDTH).zero? }
-        end
-
-        validate(digit_count_error_message) do
-          line_digit_counts = context.number_line.map { |line| line.length / PolicyOcr::DIGIT_WIDTH }
-          line_digit_counts.all? { |count| count == PolicyOcr::DIGITS_PER_LINE }
+        expected_length = PolicyOcr::DIGIT_WIDTH * PolicyOcr::DIGITS_PER_LINE
+        validate(line_length_error_message(expected_length)) do
+          context.number_line.all? { |line| line.length == expected_length }
         end
       end
 
-      def character_alignment_error_message
-        message = "Line #{context.index + 1}: Lines must be divisible by #{PolicyOcr::DIGIT_WIDTH} characters " \
-                  "for proper digit parsing"
-        message += "\n#{format_offending_lines}"
-        message += "\n"
-        message
-      end
-
-      def digit_count_error_message
-        message = "Line #{context.index + 1}: All lines must have exactly #{PolicyOcr::DIGITS_PER_LINE} digits"
+      def line_length_error_message(expected_length)
+        message = "Line #{context.index + 1}: Each line must be exactly #{expected_length} characters " \
+                  "(#{PolicyOcr::DIGITS_PER_LINE} digits × #{PolicyOcr::DIGIT_WIDTH} characters per digit)"
         message += "\n#{format_offending_lines}"
         message += "\n"
         message

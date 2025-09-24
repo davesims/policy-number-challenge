@@ -20,12 +20,11 @@ module PolicyOcr
       # @return [Interactor::Context] result with policy_numbers array set
       def call
         logger.info("Parsing policy document text...")
-        policy_numbers = number_lines.map.with_index do |number_line, index|
+        context.policy_numbers = number_lines.map.with_index do |number_line, index|
           result = PolicyOcr::Parser::ParsePolicyNumberLine.call(number_line:, index:)
           record_parser_errors(result) if result.failure?
           result.policy_number
         end
-        context.policy_numbers = policy_numbers
       end
 
       private
