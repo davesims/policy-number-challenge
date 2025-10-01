@@ -65,7 +65,7 @@ RSpec.describe PolicyOcr::Policy::Document do
       let(:document) { described_class.new(policy_numbers) }
 
       it "returns the policy numbers array" do
-        expected_output = ["711111111 ", "111111111 ERR", "????????? ILL"].join("\n") + "\n"
+        expected_output = "#{['711111111 ', '111111111 ERR', '????????? ILL'].join("\n")}\n"
         expect(document.to_s).to eq(expected_output)
       end
     end
@@ -84,7 +84,7 @@ RSpec.describe PolicyOcr::Policy::Document do
       let(:document) { described_class.new(policy_numbers) }
 
       it "preserves the order and formatting" do
-        expected_output = ["????????? ILL", "711111111 "].join("\n") + "\n"
+        expected_output = "#{['????????? ILL', '711111111 '].join("\n")}\n"
         expect(document.to_s).to eq(expected_output)
       end
     end
@@ -131,7 +131,7 @@ RSpec.describe PolicyOcr::Policy::Document do
 
     describe "#ill_count" do
       it "returns count of policy numbers with invalid digits" do
-        expect(document.ill_count).to eq(1)
+        expect(document.ill_count).to eq(2) # invalid_digits_number + invalid_number (Unparseable)
       end
     end
   end

@@ -4,6 +4,7 @@ source "https://rubygems.org"
 
 gem "factory_bot"
 gem "interactor", "~> 3.0"
+gem "irb"
 gem "pry"
 gem "rspec"
 gem "rubocop", require: false

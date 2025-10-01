@@ -81,3 +81,8 @@ require_relative "policy_ocr/digital_int/six"
 require_relative "policy_ocr/digital_int/seven"
 require_relative "policy_ocr/digital_int/eight"
 require_relative "policy_ocr/digital_int/nine"
+
+# A hack to make the digit classes accessible at the top level of the PolicyOcr module
+PolicyOcr::DigitalInt.all_numbers.each do |klass|
+  Object.const_set(klass.name.split("::").last, klass)
+end

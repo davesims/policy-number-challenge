@@ -61,10 +61,10 @@ RSpec.describe PolicyOcr::DigitalInt do
   describe ".all_numbers" do
     it "returns all digit classes" do
       expect(described_class.all_numbers).to eq([
-                                                  PolicyOcr::DigitalInt::Zero, PolicyOcr::DigitalInt::One, PolicyOcr::DigitalInt::Two,
-                                                  PolicyOcr::DigitalInt::Three, PolicyOcr::DigitalInt::Four, PolicyOcr::DigitalInt::Five,
-                                                  PolicyOcr::DigitalInt::Six, PolicyOcr::DigitalInt::Seven, PolicyOcr::DigitalInt::Eight,
-                                                  PolicyOcr::DigitalInt::Nine
+                                                  Zero, One, Two,
+                                                  Three, Four, Five,
+                                                  Six, Seven, Eight,
+                                                  Nine
                                                 ])
     end
   end

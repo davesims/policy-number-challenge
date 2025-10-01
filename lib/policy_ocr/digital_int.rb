@@ -25,13 +25,14 @@ module PolicyOcr
     # Invalid with a default pattern.
     # @param int [Integer] The integer to match against the digital int classes.
     def self.from_int(int)
-      unless int.between?(0, 9)
-        logger.error "Invalid int value given: #{int}."
-        return PolicyOcr::DigitalInt::Invalid.new(pattern: "?")
-      end
+      return PolicyOcr::DigitalInt::Invalid.new(pattern: "?") unless valid_int?(int)
 
       klass = all_numbers[int]
       klass.new
+    end
+
+    def self.valid_int?(int)
+      int.is_a?(Integer) && int.between?(0, 9)
     end
 
     def self.logger

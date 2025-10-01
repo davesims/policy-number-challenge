@@ -30,7 +30,7 @@ module PolicyOcr
       end
 
       def ill_count
-        policy_numbers.count(&:ill?)
+        policy_numbers.count(&:ill?) + unparseable_count
       end
 
       def unparseable_count

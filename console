@@ -1,0 +1,28 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'bundler/setup'
+require_relative 'lib/policy_ocr'
+
+# Define a reload method to pull in changes without restart
+def reload!
+  # Remove all PolicyOcr constants to force reload
+  if defined?(PolicyOcr)
+    PolicyOcr.constants.each do |const|
+      PolicyOcr.send(:remove_const, const) if PolicyOcr.const_defined?(const)
+    end
+    Object.send(:remove_const, :PolicyOcr)
+  end
+
+  # Clear loaded features for this project
+  $LOADED_FEATURES.reject! { |feature| feature.include?('/policy_ocr') }
+
+  # Reload the main module
+  require_relative 'lib/policy_ocr'
+  puts "🔄 Reloaded PolicyOcr classes"
+end
+
+# Start a console session with all classes loaded
+require 'pry'
+puts "💎 PolicyOcr console loaded. Type 'reload!' to refresh changes."
+Pry.start

@@ -11,6 +11,13 @@ module PolicyOcr
 
       attr_reader :digital_ints
 
+      def self.from_int_array(int_array)
+        digital_ints = int_array.map do |int|
+          PolicyOcr::DigitalInt.from_int(int)
+        end
+        new(digital_ints)
+      end
+
       def initialize(digital_ints)
         @digital_ints = digital_ints
       end
