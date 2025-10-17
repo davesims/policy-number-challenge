@@ -17,6 +17,18 @@ module PolicyOcr
       def valid?
         true
       end
+
+      def adjacent_digits
+        all_numbers.select do |num|
+          num.pattern.chars.zip(pattern.chars).one? do |a, b|
+            a != b && (a == " " || b == " ")
+          end
+        end
+      end
+
+      private
+
+      def all_numbers = PolicyOcr::DigitalInt.all_numbers
     end
   end
 end

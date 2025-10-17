@@ -23,6 +23,7 @@ module PolicyOcr
         context.policy_numbers = number_lines.map.with_index do |number_line, index|
           result = PolicyOcr::Parser::ParsePolicyNumberLine.call(number_line:, index:)
           record_parser_errors(result) if result.failure?
+          policy_number = result.policy_number
           result.policy_number
         end
       end

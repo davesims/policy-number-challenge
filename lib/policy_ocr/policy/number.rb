@@ -8,8 +8,10 @@ module PolicyOcr
     class Number
       INVALID_DIGITS_MESSAGE = "ILL"
       CHECKSUM_ERROR_MESSAGE = "ERR"
+      AMB_ERROR_MESSAGE = "AMB"
 
       attr_reader :digital_ints
+      attr_accessor :corrections
 
       def self.from_int_array(int_array)
         digital_ints = int_array.map do |int|
@@ -20,6 +22,7 @@ module PolicyOcr
 
       def initialize(digital_ints)
         @digital_ints = digital_ints
+        @corrections = []
       end
 
       def all_digits_valid?
@@ -43,8 +46,13 @@ module PolicyOcr
       def message
         return INVALID_DIGITS_MESSAGE unless all_digits_valid?
         return CHECKSUM_ERROR_MESSAGE unless checksum_valid?
+        return AMB_ERROR_MESSAGE if ambiguous?
 
         ""
+      end
+
+      def ambiguous?
+        corrections.count > 1
       end
 
       def valid?
